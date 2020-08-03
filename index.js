@@ -5,10 +5,11 @@ const isMatch = require('lodash.ismatch');
 
 function normalizeClasses(css, classNames) {
     const elements = classNames.map((tc) => `<div class="${tc}" />`).join('');
-    const dom = new JSDOM(`<!DOCTYPE html><style>${css}</style>${elements}`);
+    const html = `<!DOCTYPE html><style>${css}</style>${elements}`;
+    const dom = new JSDOM(html);
 
     return classNames.reduce((acc, className) => {
-        console.log(className);
+        console.log(className)
         const main = dom.window.document.querySelector(`.${className}`);
         const computedStyle = dom.window.getComputedStyle(main);
         const { display, visibility, ...normalized } = computedStyle._values;
@@ -35,7 +36,8 @@ async function extractClassNames(css) {
 
 async function classesJson(css) {
     const classNames = await extractClassNames(css);
-    return normalizeClasses(css, classNames.slice(0,10));
+    // return normalizeClasses(css, classNames.slice(0, 10));
+    return normalizeClasses(css, classNames);
 }
 
 (async () => {
@@ -51,8 +53,16 @@ async function classesJson(css) {
         width: 100%;
       } `);
 
-    console.log(tailwindJson);
-    console.log(inputJson);
+    // console.log(tailwindJson);
+    // console.log(inputJson);
+
+    const result = Object.entries(tailwindJson)
+        .filter(([twClass, value]) => {
+            return isMatch(inputJson['alert'], value);
+        })
+        .map(([twCLass]) => twClass);
+
+    console.log(result);
     debugger;
 })();
 
