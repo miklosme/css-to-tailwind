@@ -1,8 +1,26 @@
 const parse = require('postcss-safe-parser');
 const fs = require('fs').promises;
 const { JSDOM } = require('jsdom');
+const isMatch = require('lodash.ismatch');
 
-async function listTailwindClasses(css) {
+function normalizeClasses(css, classNames) {
+    const elements = classNames.map((tc) => `<div class="${tc}" />`).join('');
+    const dom = new JSDOM(`<!DOCTYPE html><style>${css}</style>${elements}`);
+
+    return classNames.reduce((acc, className) => {
+        console.log(className);
+        const main = dom.window.document.querySelector(`.${className}`);
+        const computedStyle = dom.window.getComputedStyle(main);
+        const { display, visibility, ...normalized } = computedStyle._values;
+
+        return {
+            ...acc,
+            [className]: normalized,
+        };
+    }, {});
+}
+
+async function extractClassNames(css) {
     const result = await parse(css);
     const classes = [];
 
@@ -15,33 +33,26 @@ async function listTailwindClasses(css) {
     return classes;
 }
 
-function normalizeTailwindClasses(css, tailwindClasses) {
-    const elements = tailwindClasses.map((tc) => `<div class="${tc}" />`).join('');
-    const dom = new JSDOM(`<!DOCTYPE html><style>${css}</style>${elements}`);
-
-    return tailwindClasses.slice(0, 10).reduce((acc, tailwindClass) => {
-        console.log(tailwindClass);
-        const main = dom.window.document.querySelector(`.${tailwindClass}`);
-        const computedStyle = dom.window.getComputedStyle(main);
-        const { display, visibility, ...normalized } = computedStyle._values;
-
-        return {
-            ...acc,
-            [tailwindClass]: normalized,
-        };
-    }, {});
-}
-
-async function tailwindJson(css) {
-    const tailwindClasses = await listTailwindClasses(css);
-    return normalizeTailwindClasses(css, tailwindClasses);
+async function classesJson(css) {
+    const classNames = await extractClassNames(css);
+    return normalizeClasses(css, classNames.slice(0,10));
 }
 
 (async () => {
     const css = await fs.readFile('./tailwind.css', 'utf8');
-    const result = await tailwindJson(css);
+    const tailwindJson = await classesJson(css);
 
-    console.log(result);
+    const inputJson = await classesJson(`.alert {
+        position: relative;
+        padding: 1.6rem 4.6rem;
+        margin-bottom: 1.6rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.2rem;
+        width: 100%;
+      } `);
+
+    console.log(tailwindJson);
+    console.log(inputJson);
     debugger;
 })();
 
