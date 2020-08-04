@@ -8,10 +8,11 @@ function normalizeClasses(css, classNames) {
     const html = `<!DOCTYPE html><style>${css}</style>${elements}`;
     const dom = new JSDOM(html);
 
-    return classNames.reduce((acc, className) => {
-        console.log(className)
+    return classNames.reduce((acc, className, index, arr) => {
+        console.log(className, index, '/', arr.length - 1);
         const main = dom.window.document.querySelector(`.${className}`);
         const computedStyle = dom.window.getComputedStyle(main);
+        debugger;
         const { display, visibility, ...normalized } = computedStyle._values;
 
         return {
@@ -40,10 +41,23 @@ async function classesJson(css) {
     return normalizeClasses(css, classNames);
 }
 
-(async () => {
-    const css = await fs.readFile('./tailwind.css', 'utf8');
-    const tailwindJson = await classesJson(css);
+function omitShorthands(obj) {
+    return Object.fromEntries(Object.entries(obj).filter(([prop, value]) => !value.includes(' ')));
+}
 
+function isSubset(parent, child) {
+    const a = omitShorthands(parent);
+    const b = omitShorthands(child);
+    console.log(a, b);
+    return isMatch(a, b);
+}
+
+(async () => {
+    // const css = await fs.readFile('./tailwind.css', 'utf8');
+    // const tailwindJson = await classesJson(css);
+    // await fs.writeFile('./tailwind.json', JSON.stringify(tailwindJson, null, 2), 'utf8');
+
+    const tailwindJson = JSON.parse(await fs.readFile('./tailwind.json', 'utf8'));
     const inputJson = await classesJson(`.alert {
         position: relative;
         padding: 1.6rem 4.6rem;
@@ -53,17 +67,30 @@ async function classesJson(css) {
         width: 100%;
       } `);
 
-    // console.log(tailwindJson);
-    // console.log(inputJson);
+    // const shorthands = {};
+
+    // Object.entries(tailwindJson).forEach(([twClass, map]) => {
+    //     Object.entries(map).forEach(([prop, value]) => {
+    //         if (value.includes(' ')) {
+    //             // console.log(prop, value);
+    //             if (!shorthands[prop]) {
+    //                 shorthands[prop] = []
+    //             }
+    //             shorthands[prop].push(value)
+    //         }
+    //     });
+    // });
+
+    // console.log(shorthands);
 
     const result = Object.entries(tailwindJson)
+    .slice(0,1)
         .filter(([twClass, value]) => {
-            return isMatch(inputJson['alert'], value);
+            return isSubset(inputJson['alert'], value);
         })
         .map(([twCLass]) => twClass);
 
     console.log(result);
-    debugger;
 })();
 
 // result.walkRules((rule) => {
