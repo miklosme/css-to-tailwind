@@ -153,6 +153,49 @@ async function normalizeSingleClasses(css) {
     );
 }
 
+function narrowDownNormalizedJsons(normalizedTailwind, normalizedCssMap) {
+    const narrowed = Object.entries(normalizedTailwind).filter(([twClass, value], index) => {
+        return isSubset(normalizedCssMap, value);
+    });
+    const result = Object.fromEntries(
+        narrowed.filter(([twClass, value], index, arr) => {
+            for (let i = 0; i < arr.length; i++) {
+                if (i === index) {
+                    continue;
+                }
+                if (isSubset(arr[i][1], value)) {
+                    return false;
+                }
+            }
+            return true;
+        }),
+    );
+
+    console.log(narrowed);
+
+    const resultMap = Object.keys(
+        narrowed.reduce(
+            (acc, [cx, map]) => ({
+                ...acc,
+                ...map,
+            }),
+            {},
+        ),
+    );
+
+    console.log('resultMap', resultMap);
+    console.log('normalizedCssMap keys', Object.keys(normalizedCssMap));
+
+    const meta = {
+        missing: Object.keys(normalizedCssMap).filter((prop) => !resultMap[prop]),
+    };
+
+    return {
+        result,
+        meta,
+    };
+}
+
 (async () => {
     const css = await fs.readFile('./tailwind.css', 'utf8');
 
@@ -179,29 +222,13 @@ async function normalizeSingleClasses(css) {
     const { alert: alertJsonRaw } = await extractSingleClasses(alertCss);
     const { alert: alertJsonNormalized } = await normalizeSingleClasses(alertCss);
 
-    debugger;
+    const { result, meta } = narrowDownNormalizedJsons(tailwindNormalized, alertJsonNormalized);
 
-    const result = Object.fromEntries(
-        Object.entries(tailwindNormalized)
-            .filter(([twClass, value], index) => {
-                return isSubset(alertJsonNormalized, value);
-            })
-            .filter(([twClass, value], index, arr) => {
-                for (let i = 0; i < arr.length; i++) {
-                    if (i === index) {
-                        continue;
-                    }
-                    if (isSubset(arr[i][1], value)) {
-                        return false;
-                    }
-                }
-                return true;
-            }),
-    );
-
-    console.log(alertJsonNormalized);
     console.log(result);
     console.log(Object.keys(result));
+
+    // TODO missing is fucked up
+    console.log('Missing:', meta.missing);
 
     /*
         # Problems
@@ -211,8 +238,9 @@ async function normalizeSingleClasses(css) {
 
         ## TODO
 
+        - fix "meta.missing"
         - default font size to convert rem to px
-        - normalize colors
+        - normalize colors https://www.npmjs.com/package/css-color-converter#torgbaarray
         - color distance
     */
 
