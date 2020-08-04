@@ -2,6 +2,7 @@ const parse = require('postcss-safe-parser');
 const fs = require('fs').promises;
 const { JSDOM } = require('jsdom');
 const isMatch = require('lodash.ismatch');
+const isEqual = require('lodash.isequal');
 
 // async function extractSingleClassNames(css) {
 //     // const result = await parse(css);
@@ -18,20 +19,23 @@ const isMatch = require('lodash.ismatch');
 //     return Object.keys(await extractSingleClasses(css));
 // }
 
-// async function classesRawJson(css) {
-//     const classNames = await extractSingleClassNames(css);
-//     // return slow_NormalizeClasses(css, classNames.slice(0, 10));
-//     return slow_NormalizeClasses(css, classNames);
-// }
+async function classesRawJson(css) {
+    const classNames = await extractSingleClassNames(css);
+    // return slow_NormalizeClasses(css, classNames.slice(0, 10));
+    return slow_NormalizeClasses(css, classNames);
+}
 
-// function isSubset(parent, child) {
-//     const a = omitShorthands(parent);
-//     const b = omitShorthands(child);
-//     if (Object.keys(child).length === 0) {
-//         return false;
-//     }
-//     return isMatch(a, b);
-// }
+function isSubset(parent, child) {
+    if (isEqual(parent, child)) {
+        return false;
+    }
+    const a = omitShorthands(parent);
+    const b = omitShorthands(child);
+    if (Object.keys(child).length === 0) {
+        return false;
+    }
+    return isMatch(a, b);
+}
 
 // async function extractSingleClasses(css) {
 //     const ast = await parse(css);
@@ -72,8 +76,6 @@ function touplesToCssDict(touples) {
 //         };
 //     }, {});
 // }
-
-
 
 // async function classesNormalizedJson(css) {
 //     const singleClassesJson = await extractSingleClasses(css);
@@ -146,10 +148,7 @@ async function normalizeSingleClasses(css) {
     return Object.fromEntries(
         Object.entries(singleClassesJson)
             // .slice(0, 10)
-            .map(([twClass, touples], index, arr) => {
-                console.log(twClass, index, '/', arr.length - 1);
-                return [twClass, normalizeCssJson(touples)];
-            })
+            .map(([twClass, touples]) => [twClass, normalizeCssJson(touples)])
             .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
     );
 }
@@ -157,30 +156,65 @@ async function normalizeSingleClasses(css) {
 (async () => {
     const css = await fs.readFile('./tailwind.css', 'utf8');
 
-    const tailwindRaw = await extractSingleClasses(css);
-    await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
+    // const tailwindRaw = await extractSingleClasses(css);
+    const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
+    // await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
 
-    const tailwindNormalized = await normalizeSingleClasses(css);
-    await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
+    // const tailwindNormalized = await normalizeSingleClasses(css);
+    const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
+    // await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
 
     // ///////////
 
-    // const inputJson = await classesRawJson(`.alert {
-    //     position: relative;
-    //     padding: 1.6rem 4.6rem;
-    //     margin-bottom: 1.6rem;
-    //     border: 1px solid #e5e5e5;
-    //     border-radius: 0.2rem;
-    //     width: 100%;
-    //   } `);
+    const alertCss = `.alert {
+        position: relative;
+        padding: 1.6rem 4.6rem;
+        margin-bottom: 1.6rem;
+        border: 1px solid #e5e5e5;
+        color: #fff;
+        border-radius: 0.2rem;
+        width: 100%;
+      } `;
 
-    // const result = Object.entries(tailwindJson)
-    //     .filter(([twClass, value]) => {
-    //         return isSubset(inputJson['alert'], value);
-    //     })
-    //     .map(([twClass]) => twClass);
+    const { alert: alertJsonRaw } = await extractSingleClasses(alertCss);
+    const { alert: alertJsonNormalized } = await normalizeSingleClasses(alertCss);
 
-    // console.log(result);
+    debugger;
+
+    const result = Object.fromEntries(
+        Object.entries(tailwindNormalized)
+            .filter(([twClass, value], index) => {
+                return isSubset(alertJsonNormalized, value);
+            })
+            .filter(([twClass, value], index, arr) => {
+                for (let i = 0; i < arr.length; i++) {
+                    if (i === index) {
+                        continue;
+                    }
+                    if (isSubset(arr[i][1], value)) {
+                        return false;
+                    }
+                }
+                return true;
+            }),
+    );
+
+    console.log(alertJsonNormalized);
+    console.log(result);
+    console.log(Object.keys(result));
+
+    /*
+        # Problems
+
+        - sizes
+        - colors
+
+        ## TODO
+
+        - default font size to convert rem to px
+        - normalize colors
+        - color distance
+    */
 
     // //////////
 
