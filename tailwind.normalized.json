@@ -3,12 +3,10 @@
     "position": "absolute",
     "width": "0px",
     "height": "0px",
-    "padding": "0px",
     "padding-top": "0px",
     "padding-right": "0px",
     "padding-bottom": "0px",
     "padding-left": "0px",
-    "margin": "-1px",
     "margin-top": "-1px",
     "margin-right": "-1px",
     "margin-bottom": "-1px",
@@ -26,12 +24,10 @@
     "position": "static",
     "width": "auto",
     "height": "auto",
-    "padding": "0px",
     "padding-top": "0px",
     "padding-right": "0px",
     "padding-bottom": "0px",
     "padding-left": "0px",
-    "margin": "0px",
     "margin-top": "0px",
     "margin-right": "0px",
     "margin-bottom": "0px",
@@ -1099,26 +1095,22 @@
   },
   "flex-1": {
     "flex-grow": "1",
-    "flex-shrink": "1",
-    "flex": "1 1"
+    "flex-shrink": "1"
   },
   "flex-auto": {
     "flex-grow": "1",
     "flex-shrink": "1",
-    "flex-basis": "auto",
-    "flex": "1 1 auto"
+    "flex-basis": "auto"
   },
   "flex-initial": {
     "flex-grow": "0",
     "flex-basis": "auto",
-    "flex-shrink": "1",
-    "flex": "0 1 auto"
+    "flex-shrink": "1"
   },
   "flex-none": {
     "flex-grow": "0",
     "flex-basis": "auto",
-    "flex-shrink": "0",
-    "flex": "0 0 auto"
+    "flex-shrink": "0"
   },
   "flex-grow-0": {
     "flex-grow": "0"
@@ -1394,280 +1386,240 @@
     "list-style-type": "decimal"
   },
   "m-0": {
-    "margin": "0px",
     "margin-top": "0px",
     "margin-right": "0px",
     "margin-bottom": "0px",
     "margin-left": "0px"
   },
   "m-1": {
-    "margin": "4px",
     "margin-top": "4px",
     "margin-right": "4px",
     "margin-bottom": "4px",
     "margin-left": "4px"
   },
   "m-2": {
-    "margin": "8px",
     "margin-top": "8px",
     "margin-right": "8px",
     "margin-bottom": "8px",
     "margin-left": "8px"
   },
   "m-3": {
-    "margin": "12px",
     "margin-top": "12px",
     "margin-right": "12px",
     "margin-bottom": "12px",
     "margin-left": "12px"
   },
   "m-4": {
-    "margin": "16px",
     "margin-top": "16px",
     "margin-right": "16px",
     "margin-bottom": "16px",
     "margin-left": "16px"
   },
   "m-5": {
-    "margin": "20px",
     "margin-top": "20px",
     "margin-right": "20px",
     "margin-bottom": "20px",
     "margin-left": "20px"
   },
   "m-6": {
-    "margin": "24px",
     "margin-top": "24px",
     "margin-right": "24px",
     "margin-bottom": "24px",
     "margin-left": "24px"
   },
   "m-8": {
-    "margin": "32px",
     "margin-top": "32px",
     "margin-right": "32px",
     "margin-bottom": "32px",
     "margin-left": "32px"
   },
   "m-10": {
-    "margin": "40px",
     "margin-top": "40px",
     "margin-right": "40px",
     "margin-bottom": "40px",
     "margin-left": "40px"
   },
   "m-12": {
-    "margin": "48px",
     "margin-top": "48px",
     "margin-right": "48px",
     "margin-bottom": "48px",
     "margin-left": "48px"
   },
   "m-16": {
-    "margin": "64px",
     "margin-top": "64px",
     "margin-right": "64px",
     "margin-bottom": "64px",
     "margin-left": "64px"
   },
   "m-20": {
-    "margin": "80px",
     "margin-top": "80px",
     "margin-right": "80px",
     "margin-bottom": "80px",
     "margin-left": "80px"
   },
   "m-24": {
-    "margin": "96px",
     "margin-top": "96px",
     "margin-right": "96px",
     "margin-bottom": "96px",
     "margin-left": "96px"
   },
   "m-32": {
-    "margin": "128px",
     "margin-top": "128px",
     "margin-right": "128px",
     "margin-bottom": "128px",
     "margin-left": "128px"
   },
   "m-40": {
-    "margin": "160px",
     "margin-top": "160px",
     "margin-right": "160px",
     "margin-bottom": "160px",
     "margin-left": "160px"
   },
   "m-48": {
-    "margin": "192px",
     "margin-top": "192px",
     "margin-right": "192px",
     "margin-bottom": "192px",
     "margin-left": "192px"
   },
   "m-56": {
-    "margin": "224px",
     "margin-top": "224px",
     "margin-right": "224px",
     "margin-bottom": "224px",
     "margin-left": "224px"
   },
   "m-64": {
-    "margin": "256px",
     "margin-top": "256px",
     "margin-right": "256px",
     "margin-bottom": "256px",
     "margin-left": "256px"
   },
   "m-auto": {
-    "margin": "auto",
     "margin-top": "auto",
     "margin-right": "auto",
     "margin-bottom": "auto",
     "margin-left": "auto"
   },
   "m-px": {
-    "margin": "0px",
     "margin-top": "0px",
     "margin-right": "0px",
     "margin-bottom": "0px",
     "margin-left": "0px"
   },
   "m-2px": {
-    "margin": "0px",
     "margin-top": "0px",
     "margin-right": "0px",
     "margin-bottom": "0px",
     "margin-left": "0px"
   },
   "-m-1": {
-    "margin": "-4px",
     "margin-top": "-4px",
     "margin-right": "-4px",
     "margin-bottom": "-4px",
     "margin-left": "-4px"
   },
   "-m-2": {
-    "margin": "-8px",
     "margin-top": "-8px",
     "margin-right": "-8px",
     "margin-bottom": "-8px",
     "margin-left": "-8px"
   },
   "-m-3": {
-    "margin": "-12px",
     "margin-top": "-12px",
     "margin-right": "-12px",
     "margin-bottom": "-12px",
     "margin-left": "-12px"
   },
   "-m-4": {
-    "margin": "-16px",
     "margin-top": "-16px",
     "margin-right": "-16px",
     "margin-bottom": "-16px",
     "margin-left": "-16px"
   },
   "-m-5": {
-    "margin": "-20px",
     "margin-top": "-20px",
     "margin-right": "-20px",
     "margin-bottom": "-20px",
     "margin-left": "-20px"
   },
   "-m-6": {
-    "margin": "-24px",
     "margin-top": "-24px",
     "margin-right": "-24px",
     "margin-bottom": "-24px",
     "margin-left": "-24px"
   },
   "-m-8": {
-    "margin": "-32px",
     "margin-top": "-32px",
     "margin-right": "-32px",
     "margin-bottom": "-32px",
     "margin-left": "-32px"
   },
   "-m-10": {
-    "margin": "-40px",
     "margin-top": "-40px",
     "margin-right": "-40px",
     "margin-bottom": "-40px",
     "margin-left": "-40px"
   },
   "-m-12": {
-    "margin": "-48px",
     "margin-top": "-48px",
     "margin-right": "-48px",
     "margin-bottom": "-48px",
     "margin-left": "-48px"
   },
   "-m-16": {
-    "margin": "-64px",
     "margin-top": "-64px",
     "margin-right": "-64px",
     "margin-bottom": "-64px",
     "margin-left": "-64px"
   },
   "-m-20": {
-    "margin": "-80px",
     "margin-top": "-80px",
     "margin-right": "-80px",
     "margin-bottom": "-80px",
     "margin-left": "-80px"
   },
   "-m-24": {
-    "margin": "-96px",
     "margin-top": "-96px",
     "margin-right": "-96px",
     "margin-bottom": "-96px",
     "margin-left": "-96px"
   },
   "-m-32": {
-    "margin": "-128px",
     "margin-top": "-128px",
     "margin-right": "-128px",
     "margin-bottom": "-128px",
     "margin-left": "-128px"
   },
   "-m-40": {
-    "margin": "-160px",
     "margin-top": "-160px",
     "margin-right": "-160px",
     "margin-bottom": "-160px",
     "margin-left": "-160px"
   },
   "-m-48": {
-    "margin": "-192px",
     "margin-top": "-192px",
     "margin-right": "-192px",
     "margin-bottom": "-192px",
     "margin-left": "-192px"
   },
   "-m-56": {
-    "margin": "-224px",
     "margin-top": "-224px",
     "margin-right": "-224px",
     "margin-bottom": "-224px",
     "margin-left": "-224px"
   },
   "-m-64": {
-    "margin": "-256px",
     "margin-top": "-256px",
     "margin-right": "-256px",
     "margin-bottom": "-256px",
     "margin-left": "-256px"
   },
   "-m-px": {
-    "margin": "-1px",
     "margin-top": "-1px",
     "margin-right": "-1px",
     "margin-bottom": "-1px",
     "margin-left": "-1px"
   },
   "-m-2px": {
-    "margin": "-2px",
     "margin-top": "-2px",
     "margin-right": "-2px",
     "margin-bottom": "-2px",
@@ -2641,140 +2593,120 @@
   "scrolling-touch": {},
   "scrolling-auto": {},
   "p-0": {
-    "padding": "0px",
     "padding-top": "0px",
     "padding-right": "0px",
     "padding-bottom": "0px",
     "padding-left": "0px"
   },
   "p-1": {
-    "padding": "4px",
     "padding-top": "4px",
     "padding-right": "4px",
     "padding-bottom": "4px",
     "padding-left": "4px"
   },
   "p-2": {
-    "padding": "8px",
     "padding-top": "8px",
     "padding-right": "8px",
     "padding-bottom": "8px",
     "padding-left": "8px"
   },
   "p-3": {
-    "padding": "12px",
     "padding-top": "12px",
     "padding-right": "12px",
     "padding-bottom": "12px",
     "padding-left": "12px"
   },
   "p-4": {
-    "padding": "16px",
     "padding-top": "16px",
     "padding-right": "16px",
     "padding-bottom": "16px",
     "padding-left": "16px"
   },
   "p-5": {
-    "padding": "20px",
     "padding-top": "20px",
     "padding-right": "20px",
     "padding-bottom": "20px",
     "padding-left": "20px"
   },
   "p-6": {
-    "padding": "24px",
     "padding-top": "24px",
     "padding-right": "24px",
     "padding-bottom": "24px",
     "padding-left": "24px"
   },
   "p-8": {
-    "padding": "32px",
     "padding-top": "32px",
     "padding-right": "32px",
     "padding-bottom": "32px",
     "padding-left": "32px"
   },
   "p-10": {
-    "padding": "40px",
     "padding-top": "40px",
     "padding-right": "40px",
     "padding-bottom": "40px",
     "padding-left": "40px"
   },
   "p-12": {
-    "padding": "48px",
     "padding-top": "48px",
     "padding-right": "48px",
     "padding-bottom": "48px",
     "padding-left": "48px"
   },
   "p-16": {
-    "padding": "64px",
     "padding-top": "64px",
     "padding-right": "64px",
     "padding-bottom": "64px",
     "padding-left": "64px"
   },
   "p-20": {
-    "padding": "80px",
     "padding-top": "80px",
     "padding-right": "80px",
     "padding-bottom": "80px",
     "padding-left": "80px"
   },
   "p-24": {
-    "padding": "96px",
     "padding-top": "96px",
     "padding-right": "96px",
     "padding-bottom": "96px",
     "padding-left": "96px"
   },
   "p-32": {
-    "padding": "128px",
     "padding-top": "128px",
     "padding-right": "128px",
     "padding-bottom": "128px",
     "padding-left": "128px"
   },
   "p-40": {
-    "padding": "160px",
     "padding-top": "160px",
     "padding-right": "160px",
     "padding-bottom": "160px",
     "padding-left": "160px"
   },
   "p-48": {
-    "padding": "192px",
     "padding-top": "192px",
     "padding-right": "192px",
     "padding-bottom": "192px",
     "padding-left": "192px"
   },
   "p-56": {
-    "padding": "224px",
     "padding-top": "224px",
     "padding-right": "224px",
     "padding-bottom": "224px",
     "padding-left": "224px"
   },
   "p-64": {
-    "padding": "256px",
     "padding-top": "256px",
     "padding-right": "256px",
     "padding-bottom": "256px",
     "padding-left": "256px"
   },
   "p-px": {
-    "padding": "0px",
     "padding-top": "0px",
     "padding-right": "0px",
     "padding-bottom": "0px",
     "padding-left": "0px"
   },
   "p-2px": {
-    "padding": "0px",
     "padding-top": "0px",
     "padding-right": "0px",
     "padding-bottom": "0px",

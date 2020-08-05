@@ -1,0 +1,55 @@
+diff --git a/node_modules/cssstyle/lib/CSSStyleDeclaration.js b/node_modules/cssstyle/lib/CSSStyleDeclaration.js
+index bded9a4..0f1f022 100644
+--- a/node_modules/cssstyle/lib/CSSStyleDeclaration.js
++++ b/node_modules/cssstyle/lib/CSSStyleDeclaration.js
+@@ -7,7 +7,7 @@ var CSSOM = require('cssom');
+ var allProperties = require('./allProperties');
+ var allExtraProperties = require('./allExtraProperties');
+ var implementedProperties = require('./implementedProperties');
+-var { dashedToCamelCase } = require('./parsers');
++var { dashedToCamelCase, shorthandProperties } = require('./parsers');
+ var getBasicPropertyDescriptor = require('./utils/getBasicPropertyDescriptor');
+ 
+ /**
+@@ -41,6 +41,10 @@ CSSStyleDeclaration.prototype = {
+     return this._values[name].toString();
+   },
+ 
++  getNonShorthandValues: function() {
++    return Object.fromEntries(Object.entries(this._values).filter(([prop]) => !shorthandProperties.has(prop)));
++  },
++
+   /**
+    *
+    * @param {string} name
+diff --git a/node_modules/cssstyle/lib/parsers.js b/node_modules/cssstyle/lib/parsers.js
+index 8ecdf5e..f5c4abf 100644
+--- a/node_modules/cssstyle/lib/parsers.js
++++ b/node_modules/cssstyle/lib/parsers.js
+@@ -7,6 +7,8 @@
+ const namedColors = require('./named_colors.json');
+ const { hslToRgb } = require('./utils/colorSpace');
+ 
++exports.shorthandProperties = new Set();
++
+ exports.TYPES = {
+   INTEGER: 1,
+   NUMBER: 2,
+@@ -557,6 +559,9 @@ exports.shorthandParser = function parse(v, shorthand_for) {
+ };
+ 
+ exports.shorthandSetter = function(property, shorthand_for) {
++  if (Object.keys(shorthand_for).length) {
++    exports.shorthandProperties.add(property);
++  }
+   return function(v) {
+     var obj = exports.shorthandParser(v, shorthand_for);
+     if (obj === undefined) {
+@@ -616,6 +621,7 @@ exports.shorthandGetter = function(property, shorthand_for) {
+ // if three, the first applies to the top, the second to left and right, the third bottom
+ // if four, top, right, bottom, left
+ exports.implicitSetter = function(property_before, property_after, isValid, parser) {
++  exports.shorthandProperties.add(property_before);
+   property_after = property_after || '';
+   if (property_after !== '') {
+     property_after = '-' + property_after;

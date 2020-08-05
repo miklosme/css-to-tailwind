@@ -1,6 +1,6 @@
 const parse = require('postcss-safe-parser');
 const fs = require('fs').promises;
-const { CSSStyleDeclaration } = require("cssstyle");
+const { CSSStyleDeclaration } = require('cssstyle');
 const isMatch = require('lodash.ismatch');
 const isEqual = require('lodash.isequal');
 const parseSize = require('to-px');
@@ -28,12 +28,7 @@ function toNormalSize(v) {
 function normalizeToupleBySize([prop, value]) {
     if (sizePropsSet.has(prop)) {
         try {
-            const converted = value
-                .split(' ')
-                .map((value) => toNormalSize(value))
-                .join(' ');
-
-            return [prop, converted];
+            return [prop, toNormalSize(value)];
         } catch (e) {
             console.log(e);
             return [prop, value];
@@ -110,17 +105,13 @@ function omitIf(obj, ...fns) {
     return Object.fromEntries(Object.entries(obj).filter((touple) => !fns.some((fn) => fn(touple))));
 }
 
-function isShorthand([prop, value]) {
-    return value.includes(' ');
-}
-
 function isVariable([prop, value]) {
     return prop.startsWith('--');
 }
 
 function isSubset(parent, child) {
-    const a = omitIf(parent, isShorthand, isVariable);
-    const b = omitIf(child, isShorthand, isVariable);
+    const a = omitIf(parent, isVariable);
+    const b = omitIf(child, isVariable);
     if (Object.keys(child).length === 0) {
         return false;
     }
@@ -171,13 +162,15 @@ function resolveLocalVariables(touples) {
 
 function extendCssJsonWithNormalized(touples) {
     const declaration = new CSSStyleDeclaration();
-    const resolvedTouples = resolveLocalVariables(touples)
+    const resolvedTouples = resolveLocalVariables(touples);
     resolvedTouples.forEach(([prop, value]) => {
-        declaration.setProperty(prop, value)
-    })
+        declaration.setProperty(prop, value);
+    });
 
-    const normalized = normalizeTouplesByColor(normalizeTouplesBySize(Object.entries(declaration._values)));
-    
+    const normalized = normalizeTouplesByColor(
+        normalizeTouplesBySize(Object.entries(declaration.getNonShorthandValues())),
+    );
+
     return Object.fromEntries(normalized);
 }
 
@@ -185,10 +178,9 @@ async function normalizeSingleClasses(css) {
     const singleClassesJson = await parseSingleClasses(css);
 
     return Object.fromEntries(
-        Object.entries(singleClassesJson)
-            .map(([twClass, touples]) => {
-                return [twClass, extendCssJsonWithNormalized(touples)];
-            }),
+        Object.entries(singleClassesJson).map(([twClass, touples]) => {
+            return [twClass, extendCssJsonWithNormalized(touples)];
+        }),
     );
 }
 
