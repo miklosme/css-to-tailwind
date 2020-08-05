@@ -1,6 +1,6 @@
 const parse = require('postcss-safe-parser');
 const fs = require('fs').promises;
-const { JSDOM } = require('jsdom');
+const { CSSStyleDeclaration } = require("cssstyle");
 const isMatch = require('lodash.ismatch');
 const isEqual = require('lodash.isequal');
 const parseSize = require('to-px');
@@ -100,21 +100,6 @@ function roundSize(num) {
     return sizes[index];
 }
 
-// async function extractSingleClassNames(css) {
-//     // const result = await parse(css);
-//     // const classes = [];
-
-//     // result.walkRules((rule) => {
-//     //     if (rule.parent.type === 'root' && /^\.[a-z0-9-]+$/.test(rule.selector)) {
-//     //         classes.push(rule.selector.slice(1));
-//     //     }
-//     // });
-
-//     // return classes;
-
-//     return Object.keys(await extractSingleClasses(css));
-// }
-
 async function classesRawJson(css) {
     const classNames = await extractSingleClassNames(css);
     // return slow_NormalizeClasses(css, classNames.slice(0, 10));
@@ -145,71 +130,9 @@ function isSubset(parent, child) {
     return isMatch(a, b);
 }
 
-// async function extractSingleClasses(css) {
-//     const ast = await parse(css);
-//     const result = {};
-//     ast.walkRules((rule) => {
-//         if (rule.parent.type === 'root' && /^\.[a-z0-9-]+$/.test(rule.selector)) {
-//             const selector = rule.selector.slice(1);
-//             rule.walkDecls((decl) => {
-//                 if (!result[selector]) {
-//                     result[selector] = [];
-//                 }
-//                 result[selector].push([decl.prop, decl.value]);
-//             });
-//         }
-//     });
-//     return result;
-// }
-
 function touplesToCssDict(touples) {
     return touples.map(([prop, value]) => `${prop}: ${value}`).join(';');
 }
-
-// function slow_NormalizeClasses(css, classNames) {
-//     const elements = classNames.map((tc) => `<div class="${tc}" />`).join('');
-//     const html = `<!DOCTYPE html><style>${css}</style>${elements}`;
-//     const dom = new JSDOM(html);
-
-//     return classNames.reduce((acc, className, index, arr) => {
-//         console.log(className, index, '/', arr.length - 1);
-//         const main = dom.window.document.querySelector(`.${className}`);
-//         const computedStyle = dom.window.getComputedStyle(main);
-//         debugger;
-//         const { display, visibility, ...normalized } = computedStyle._values;
-
-//         return {
-//             ...acc,
-//             [className]: normalized,
-//         };
-//     }, {});
-// }
-
-// async function classesNormalizedJson(css) {
-//     const singleClassesJson = await extractSingleClasses(css);
-//     const normalized = Object.fromEntries(
-//         Object.entries(singleClassesJson)
-//             // .slice(0, 10)
-//             .map(([twClass, touples], index, arr) => {
-//                 console.log(twClass, index, '/', arr.length - 1);
-//                 return [twClass, extendCssJsonWithNormalized(touples)];
-//             })
-//             .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
-//     );
-// }
-// async function classesRawJson(css) {
-//     const singleClassesJson = await extractSingleClasses(css);
-
-//     const html = `<!DOCTYPE html><style>#test{${touplesToCssDict(touples)}}</style><div id="test" />`;
-//     const dom = new JSDOM(html);
-
-//     const main = dom.window.document.querySelector('#test');
-//     const computedStyle = dom.window.getComputedStyle(main);
-//     const { display, visibility, ...normalized } = computedStyle._values;
-
-//     return normalized;
-// }
-
 async function parseSingleClasses(css) {
     const ast = await parse(css);
     const result = {};
@@ -247,17 +170,13 @@ function resolveLocalVariables(touples) {
 }
 
 function extendCssJsonWithNormalized(touples) {
-    const dict = touplesToCssDict(resolveLocalVariables(touples));
-    const html = `<!DOCTYPE html><style>#test{${dict}}</style><div id="test" />`;
-    const dom = new JSDOM(html);
+    const declaration = new CSSStyleDeclaration();
+    const resolvedTouples = resolveLocalVariables(touples)
+    resolvedTouples.forEach(([prop, value]) => {
+        declaration.setProperty(prop, value)
+    })
 
-    const main = dom.window.document.querySelector('#test');
-    const computedStyle = dom.window.getComputedStyle(main);
-    const { display, visibility, ...computed } = computedStyle._values;
-
-    const inputAsObject = Object.fromEntries(touples);
-
-    const normalized = normalizeTouplesByColor(normalizeTouplesBySize(Object.entries(computed)));
+    const normalized = normalizeTouplesByColor(normalizeTouplesBySize(Object.entries(declaration._values)));
     
     return Object.fromEntries(normalized);
 }
@@ -267,11 +186,9 @@ async function normalizeSingleClasses(css) {
 
     return Object.fromEntries(
         Object.entries(singleClassesJson)
-            // .slice(0, 10)
             .map(([twClass, touples]) => {
                 return [twClass, extendCssJsonWithNormalized(touples)];
             }),
-        // .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
     );
 }
 
@@ -363,31 +280,4 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         - normalize colors https://www.npmjs.com/package/css-color-converter#torgbaarray
         - color distance
     */
-
-    // //////////
-
-    // const shorthands = {};
-
-    // Object.entries(tailwindJson).forEach(([twClass, map]) => {
-    //     Object.entries(map).forEach(([prop, value]) => {
-    //         if (value.includes(' ')) {
-    //             // console.log(prop, value);
-    //             if (!shorthands[prop]) {
-    //                 shorthands[prop] = []
-    //             }
-    //             shorthands[prop].push(value)
-    //         }
-    //     });
-    // });
-
-    // console.log(shorthands);
 })();
-
-// result.walkRules((rule) => {
-//   if (rule.parent.type === "root" && /^\.[a-z0-9-]+$/.test(rule.selector)) {
-//     json[rule.selector] = [];
-//     rule.walkDecls((decl) => {
-//       json[rule.selector].push([decl.prop, decl.value]);
-//     });
-//   }
-// });
