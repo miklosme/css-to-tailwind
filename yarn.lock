@@ -450,6 +450,11 @@ optionator@^0.8.1:
     type-check "~0.3.2"
     word-wrap "~1.2.3"
 
+parse-unit@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/parse-unit/-/parse-unit-1.0.1.tgz#7e1bb6d5bef3874c28e392526a2541170291eecf"
+  integrity sha1-fhu21b7zh0wo45JSaiVBFwKR7s8=
+
 parse5@5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.1.tgz#f68e4e5ba1852ac2cadc00f4555fff6c2abb6178"
@@ -598,6 +603,13 @@ symbol-tree@^3.2.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
+
+to-px@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/to-px/-/to-px-1.1.0.tgz#b6b269ed5db0cc9aefc15272a4c8bcb2ca1e99ca"
+  integrity sha512-bfg3GLYrGoEzrGoE05TAL/Uw+H/qrf2ptr9V3W7U0lkjjyYnIfgxmVLUfhQ1hZpIQwin81uxhDjvUkDYsC0xWw==
+  dependencies:
+    parse-unit "^1.0.1"
 
 tough-cookie@^2.3.3, tough-cookie@~2.5.0:
   version "2.5.0"

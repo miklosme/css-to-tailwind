@@ -3,6 +3,74 @@ const fs = require('fs').promises;
 const { JSDOM } = require('jsdom');
 const isMatch = require('lodash.ismatch');
 const isEqual = require('lodash.isequal');
+const __toPX = require('to-px');
+
+function toNormalSize(v) {
+    // patch the npm package
+    if (v === '0') {
+        return '0px';
+    }
+
+    if (knownNonPxConvertableValuesSet.has(v)) {
+        return v; // do not throw
+    }
+
+    const px = __toPX(v);
+
+    if (typeof px === 'number') {
+        return `${roundSize(px)}px`;
+    }
+
+    throw new Error(`cannot convert ${v} to px`);
+}
+
+function normalizeToupleBySize([prop, value]) {
+    if (sizePropsSet.has(prop)) {
+        try {
+            const converted = value
+                .split(' ')
+                .map((value) => toNormalSize(value))
+                .join(' ');
+
+            return [prop, converted];
+        } catch (e) {
+            console.log(e);
+            return [prop, value];
+        }
+    }
+
+    return [prop, value];
+}
+
+const sizePropsSet = new Set([
+    'width',
+    'height',
+    'padding',
+    'margin',
+    'padding-top',
+    'padding-right',
+    'padding-bottom',
+    'padding-left',
+    'margin-top',
+    'margin-right',
+    'margin-bottom',
+    'margin-left',
+]);
+
+const knownNonPxConvertableValuesSet = new Set(['100%', 'auto', '100vh', '100vw']);
+
+// TODO get this form tailwind config
+const sizes = [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256];
+
+function roundSize(num) {
+    // do nothing if not in range
+    if (num < sizes[0] || num > sizes[sizes.length - 1]) {
+        return num;
+    }
+    const dist = sizes.map((size) => Math.abs(size - num));
+    const index = dist.indexOf(Math.min(...dist));
+    return sizes[index];
+}
 
 // async function extractSingleClassNames(css) {
 //     // const result = await parse(css);
@@ -137,7 +205,9 @@ function extendCssJsonWithNormalized(touples) {
 
     const inputAsObject = Object.fromEntries(touples);
 
-    return { ...inputAsObject, ...normalized };
+    const sizeNormalized = Object.fromEntries(Object.entries(normalized).map(normalizeToupleBySize));
+
+    return { ...inputAsObject, ...sizeNormalized };
 }
 
 function omitShorthands(obj) {
@@ -206,7 +276,7 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
     // const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
     await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
 
-    // ///////////
+    // ////////
 
     const alertCss = `.alert {
         position: relative;
@@ -218,11 +288,13 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         width: 100%;
       } `;
 
-    const { alert: alertJsonRaw } = await extractSingleClasses(alertCss);
     const { alert: alertJsonNormalized } = await normalizeSingleClasses(alertCss);
+
+    // ///////////
 
     const { result, meta } = filterTailwind(tailwindNormalized, alertJsonNormalized);
 
+    console.log('alertJsonNormalized', alertJsonNormalized);
     console.log();
     console.log('====');
     console.log('Results:', result);

@@ -7,7 +7,8 @@
     "jsdom": "^16.3.0",
     "lodash.isequal": "^4.5.0",
     "lodash.ismatch": "^4.4.0",
-    "postcss-safe-parser": "^4.0.2"
+    "postcss-safe-parser": "^4.0.2",
+    "to-px": "^1.1.0"
   },
   "prettier": {
     "printWidth": 120,
