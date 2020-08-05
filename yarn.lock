@@ -240,6 +240,11 @@ escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
+euclidean-distance@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/euclidean-distance/-/euclidean-distance-1.0.0.tgz#703bc213e97c1d731d79b599e937941ba9670a68"
+  integrity sha1-cDvCE+l8HXMdebWZ6TeUG6lnCmg=
+
 expand-brackets@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/expand-brackets/-/expand-brackets-2.1.4.tgz#b77735e315ce30f6b6eff0f83b04151a22449622"
@@ -560,10 +565,10 @@ lodash.isequal@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
 
-lodash.ismatch@^4.4.0:
+lodash.ismatchwith@^4.4.0:
   version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.ismatch/-/lodash.ismatch-4.4.0.tgz#756cb5150ca3ba6f11085a78849645f188f85f37"
-  integrity sha1-dWy1FQyjum8RCFp4hJZF8Yj4Xzc=
+  resolved "https://registry.yarnpkg.com/lodash.ismatchwith/-/lodash.ismatchwith-4.4.0.tgz#3d1f55f0ca004473ee211b568e5fe220f081e1a9"
+  integrity sha1-PR9V8MoARHPuIRtWjl/iIPCB4ak=
 
 map-cache@^0.2.2:
   version "0.2.2"

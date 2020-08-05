@@ -2,10 +2,15 @@ const parse = require('postcss-safe-parser');
 const fs = require('fs').promises;
 const { CSSStyleDeclaration } = require('cssstyle');
 const allProperties = require('cssstyle/lib/allProperties');
-const isMatch = require('lodash.ismatch');
+const isMatchWith = require('lodash.ismatchwith');
 const isEqual = require('lodash.isequal');
 const parseSize = require('to-px');
 const parseColor = require('css-color-converter');
+const euclideanDistance = require('euclidean-distance');
+
+const CONFIG = {
+    COLOR_DELTA: 10,
+};
 
 function toNormalSize(v, rounder) {
     if (knownNonPxConvertableValuesSet.has(v)) {
@@ -67,7 +72,7 @@ function normalizeTouplesBySize(touples) {
     return touples.map(normalizeToupleBySize);
 }
 
-// TODO there are few more exotic sizes, like text-line-through-width
+// TODO there are few other exotic sizes, like text-line-through-width
 const sizePropsSet = new Set([
     'width',
     'max-width',
@@ -113,7 +118,7 @@ function normalizeTouplesByColor(touples) {
 
 const colorPropsSet = new Set(Array.from(allProperties).filter((prop) => prop.includes('color')));
 
-const knownNonPxConvertableValuesSet = new Set(['100%', 'auto', '100vh', '100vw']);
+const knownNonPxConvertableValuesSet = new Set(['100%', '100vh', '100vw', 'auto', 'none']);
 
 // TODO get this form tailwind config
 const sizes = [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256];
@@ -179,7 +184,14 @@ function isSubset(parent, child) {
     if (isEqual(a, b)) {
         return false;
     }
-    return isMatch(a, b);
+    return isMatchWith(a, b, (va, vb, key, aaa, bbb) => {
+        if (colorPropsSet.has(key)) {
+            const x = parseColor(va).toRgbaArray();
+            const y = parseColor(vb).toRgbaArray();
+            const distance = euclideanDistance(x, y);
+            return distance < CONFIG.COLOR_DELTA;
+        }
+    });
 }
 
 function touplesToCssDict(touples) {
@@ -294,7 +306,7 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         position: relative;
         padding: 1.6rem 4.6rem;
         margin-bottom: 1.6rem;
-        border: 1px solid #e5e5e5;
+        border: 1px solid #FAD0D0;
         color: #fff;
         border-radius: 0.2rem;
         width: 100%;
@@ -322,19 +334,13 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
     console.log();
     console.log('====');
     console.log('Results:', result);
-    console.log('Tailwind classes:', Object.keys(result));
+    console.log('Tailwind classes:', Object.keys(result).sort());
     console.log('Missing:', meta.missing);
 
     /*
-        # Problems
 
-        - colors
-        - borders
+    TODO
 
-        ## TODO
-
-        - default font size to convert rem to px
-        - normalize colors https://www.npmjs.com/package/css-color-converter#torgbaarray
-        - color distance
+        - CONFIG font size to convert rem to px
     */
 })();
