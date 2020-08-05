@@ -63,14 +63,12 @@ const sizePropsSet = new Set([
 ]);
 
 function normalizeTouplesByColor(touples) {
-    const variables = touples.filter((touple) => {
-        return touple[0].startsWith('--');
-    });
     return touples.map(([prop, value]) => {
         if (colorPropsSet.has(prop)) {
-            const resolvedValue = variables.reduce((str, [varN, varV]) => str.split(`var(${varN})`).join(varV), value);
-            const rgba = parseColor(resolvedValue).toRgbaArray();
-            return [prop, `rgba(${rgba.join(', ')})`];
+            const rgba = parseColor(value).toRgbaArray();
+            if (Array.isArray(rgba) && rgba.length === 4) {
+                return [prop, `rgba(${rgba.join(', ')})`];
+            }
         }
 
         return [prop, value];
@@ -123,13 +121,25 @@ async function classesRawJson(css) {
     return slow_NormalizeClasses(css, classNames);
 }
 
+function omitIf(obj, ...fns) {
+    return Object.fromEntries(Object.entries(obj).filter((touple) => !fns.some((fn) => fn(touple))));
+}
+
+function isShorthand([prop, value]) {
+    return value.includes(' ');
+}
+
+function isVariable([prop, value]) {
+    return prop.startsWith('--');
+}
+
 function isSubset(parent, child) {
-    if (isEqual(parent, child)) {
+    const a = omitIf(parent, isShorthand, isVariable);
+    const b = omitIf(child, isShorthand, isVariable);
+    if (Object.keys(child).length === 0) {
         return false;
     }
-    const a = omitShorthands(parent);
-    const b = omitShorthands(child);
-    if (Object.keys(child).length === 0) {
+    if (isEqual(a, b)) {
         return false;
     }
     return isMatch(a, b);
@@ -225,25 +235,31 @@ async function extractSingleClasses(css) {
     );
 }
 
+function resolveLocalVariables(touples) {
+    const variables = touples.filter((touple) => {
+        return touple[0].startsWith('--');
+    });
+
+    return touples.map(([prop, value]) => {
+        const resolvedValue = variables.reduce((str, [varN, varV]) => str.split(`var(${varN})`).join(varV), value);
+        return [prop, resolvedValue];
+    });
+}
+
 function extendCssJsonWithNormalized(touples) {
-    const html = `<!DOCTYPE html><style>#test{${touplesToCssDict(touples)}}</style><div id="test" />`;
+    const dict = touplesToCssDict(resolveLocalVariables(touples));
+    const html = `<!DOCTYPE html><style>#test{${dict}}</style><div id="test" />`;
     const dom = new JSDOM(html);
 
     const main = dom.window.document.querySelector('#test');
     const computedStyle = dom.window.getComputedStyle(main);
-    const { display, visibility, ...normalized } = computedStyle._values;
+    const { display, visibility, ...computed } = computedStyle._values;
 
     const inputAsObject = Object.fromEntries(touples);
 
-    const sizeNormalized = Object.fromEntries(
-        normalizeTouplesByColor(normalizeTouplesBySize(Object.entries(normalized))),
-    );
-
-    return sizeNormalized;
-}
-
-function omitShorthands(obj) {
-    return Object.fromEntries(Object.entries(obj).filter(([prop, value]) => !value.includes(' ')));
+    const normalized = normalizeTouplesByColor(normalizeTouplesBySize(Object.entries(computed)));
+    
+    return Object.fromEntries(normalized);
 }
 
 async function normalizeSingleClasses(css) {
@@ -252,7 +268,9 @@ async function normalizeSingleClasses(css) {
     return Object.fromEntries(
         Object.entries(singleClassesJson)
             // .slice(0, 10)
-            .map(([twClass, touples]) => [twClass, extendCssJsonWithNormalized(touples)]),
+            .map(([twClass, touples]) => {
+                return [twClass, extendCssJsonWithNormalized(touples)];
+            }),
         // .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
     );
 }
@@ -314,9 +332,9 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
 
     const css = await fs.readFile('./tailwind.css', 'utf8');
 
-    const tailwindRaw = await extractSingleClasses(css);
-    // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
-    await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
+    // const tailwindRaw = await extractSingleClasses(css);
+    // // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
+    // await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
 
     const tailwindNormalized = await normalizeSingleClasses(css);
     // const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
