@@ -1,25 +1,22 @@
 const parse = require('postcss-safe-parser');
 const fs = require('fs').promises;
 const { CSSStyleDeclaration } = require('cssstyle');
+const allProperties = require('cssstyle/lib/allProperties');
 const isMatch = require('lodash.ismatch');
 const isEqual = require('lodash.isequal');
 const parseSize = require('to-px');
 const parseColor = require('css-color-converter');
 
-function toNormalSize(v) {
-    // patch the npm package
-    if (v === '0') {
-        return '0px';
-    }
-
+function toNormalSize(v, rounder) {
     if (knownNonPxConvertableValuesSet.has(v)) {
-        return v; // do not throw
+        return v; // do not throw at the end of this fn
     }
 
-    const px = parseSize(v);
+    // patch the npm package, bc it returns null for '0'
+    const px = v === '0' ? 0 : parseSize(v);
 
     if (typeof px === 'number') {
-        return `${roundSize(px)}px`;
+        return `${rounder(px)}px`;
     }
 
     throw new Error(`cannot convert ${v} to px`);
@@ -28,7 +25,7 @@ function toNormalSize(v) {
 function normalizeToupleBySize([prop, value]) {
     if (sizePropsSet.has(prop)) {
         try {
-            return [prop, toNormalSize(value)];
+            return [prop, toNormalSize(value, roundCommonSize)];
         } catch (e) {
             console.log(e);
             return [prop, value];
@@ -38,23 +35,67 @@ function normalizeToupleBySize([prop, value]) {
     return [prop, value];
 }
 
+function normalizeTouplesForBorderRadius(touples) {
+    return touples.map(([prop, value]) => {
+        if (prop === 'border-radius') {
+            try {
+                return [prop, toNormalSize(value, roundBorderRadius)];
+            } catch (e) {
+                console.log(e);
+                return [prop, value];
+            }
+        }
+        return [prop, value];
+    });
+}
+
+function normalizeTouplesForBorder(touples) {
+    return touples.map(([prop, value]) => {
+        if (borderSizePropsSet.has(prop)) {
+            try {
+                return [prop, toNormalSize(value, roundBorder)];
+            } catch (e) {
+                console.log(e);
+                return [prop, value];
+            }
+        }
+        return [prop, value];
+    });
+}
+
 function normalizeTouplesBySize(touples) {
     return touples.map(normalizeToupleBySize);
 }
 
+// TODO there are few more exotic sizes, like text-line-through-width
 const sizePropsSet = new Set([
     'width',
+    'max-width',
+    'min-width',
+
     'height',
+    'max-height',
+    'min-height',
+
     'padding',
-    'margin',
     'padding-top',
     'padding-right',
     'padding-bottom',
     'padding-left',
+
+    'margin',
     'margin-top',
     'margin-right',
     'margin-bottom',
     'margin-left',
+]);
+
+const borderSizePropsSet = new Set([
+    'border-width',
+    'border-top-width',
+    'border-right-width',
+    'border-bottom-width',
+    'border-left-width',
 ]);
 
 function normalizeTouplesByColor(touples) {
@@ -70,22 +111,14 @@ function normalizeTouplesByColor(touples) {
     });
 }
 
-const colorPropsSet = new Set([
-    'color',
-    'background-color',
-    'border-color',
-    'border-top-color',
-    'border-right-color',
-    'border-bottom-color',
-    'border-left-color',
-]);
+const colorPropsSet = new Set(Array.from(allProperties).filter((prop) => prop.includes('color')));
 
 const knownNonPxConvertableValuesSet = new Set(['100%', 'auto', '100vh', '100vw']);
 
 // TODO get this form tailwind config
 const sizes = [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256];
 
-function roundSize(num) {
+function roundCommonSize(num) {
     // do nothing if not in range
     if (num < sizes[0] || num > sizes[sizes.length - 1]) {
         return num;
@@ -93,6 +126,34 @@ function roundSize(num) {
     const dist = sizes.map((size) => Math.abs(size - num));
     const index = dist.indexOf(Math.min(...dist));
     return sizes[index];
+}
+
+const bordeSizes = [0, 1, 2, 4, 8];
+
+function roundBorder(num) {
+    // do nothing if not in range
+    if (num < bordeSizes[0] || num > bordeSizes[bordeSizes.length - 1]) {
+        return num;
+    }
+    const dist = bordeSizes.map((size) => Math.abs(size - num));
+    const index = dist.indexOf(Math.min(...dist));
+    return bordeSizes[index];
+}
+
+const borderRadiusSizes = [0, 2, 4, 6, 8];
+
+function roundBorderRadius(num) {
+    // this must be a full round value
+    if (num > 100) {
+        return 9999;
+    }
+    // do nothing if not in range
+    if (num < borderRadiusSizes[0] || num > borderRadiusSizes[borderRadiusSizes.length - 1]) {
+        return num;
+    }
+    const dist = borderRadiusSizes.map((size) => Math.abs(size - num));
+    const index = dist.indexOf(Math.min(...dist));
+    return borderRadiusSizes[index];
 }
 
 async function classesRawJson(css) {
@@ -160,6 +221,14 @@ function resolveLocalVariables(touples) {
     });
 }
 
+function normalize(value) {
+    return Object.fromEntries(
+        normalizeTouplesByColor(
+            normalizeTouplesForBorder(normalizeTouplesForBorderRadius(normalizeTouplesBySize(Object.entries(value)))),
+        ),
+    );
+}
+
 function extendCssJsonWithNormalized(touples) {
     const declaration = new CSSStyleDeclaration();
     const resolvedTouples = resolveLocalVariables(touples);
@@ -167,11 +236,7 @@ function extendCssJsonWithNormalized(touples) {
         declaration.setProperty(prop, value);
     });
 
-    const normalized = normalizeTouplesByColor(
-        normalizeTouplesBySize(Object.entries(declaration.getNonShorthandValues())),
-    );
-
-    return Object.fromEntries(normalized);
+    return normalize(declaration.getNonShorthandValues());
 }
 
 async function normalizeSingleClasses(css) {

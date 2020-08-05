@@ -613,19 +613,19 @@
     "--border-opacity": "1"
   },
   "rounded-none": {
-    "border-radius": "0"
+    "border-radius": "0px"
   },
   "rounded-sm": {
-    "border-radius": "0.125rem"
+    "border-radius": "2px"
   },
   "rounded": {
-    "border-radius": "0.25rem"
+    "border-radius": "4px"
   },
   "rounded-md": {
-    "border-radius": "0.375rem"
+    "border-radius": "6px"
   },
   "rounded-lg": {
-    "border-radius": "0.5rem"
+    "border-radius": "8px"
   },
   "rounded-full": {
     "border-radius": "9999px"
@@ -869,16 +869,16 @@
     "border-left-width": "1px"
   },
   "border-t-0": {
-    "border-top-width": "0"
+    "border-top-width": "0px"
   },
   "border-r-0": {
-    "border-right-width": "0"
+    "border-right-width": "0px"
   },
   "border-b-0": {
-    "border-bottom-width": "0"
+    "border-bottom-width": "0px"
   },
   "border-l-0": {
-    "border-left-width": "0"
+    "border-left-width": "0px"
   },
   "border-t-2": {
     "border-top-width": "2px"
@@ -2435,34 +2435,34 @@
     "max-width": "none"
   },
   "max-w-xs": {
-    "max-width": "20rem"
+    "max-width": "320px"
   },
   "max-w-sm": {
-    "max-width": "24rem"
+    "max-width": "384px"
   },
   "max-w-md": {
-    "max-width": "28rem"
+    "max-width": "448px"
   },
   "max-w-lg": {
-    "max-width": "32rem"
+    "max-width": "512px"
   },
   "max-w-xl": {
-    "max-width": "36rem"
+    "max-width": "576px"
   },
   "max-w-2xl": {
-    "max-width": "42rem"
+    "max-width": "672px"
   },
   "max-w-3xl": {
-    "max-width": "48rem"
+    "max-width": "768px"
   },
   "max-w-4xl": {
-    "max-width": "56rem"
+    "max-width": "896px"
   },
   "max-w-5xl": {
-    "max-width": "64rem"
+    "max-width": "1024px"
   },
   "max-w-6xl": {
-    "max-width": "72rem"
+    "max-width": "1152px"
   },
   "max-w-full": {
     "max-width": "100%"
@@ -2480,7 +2480,7 @@
     "max-width": "1280px"
   },
   "min-h-0": {
-    "min-height": "0"
+    "min-height": "0px"
   },
   "min-h-full": {
     "min-height": "100%"
@@ -2489,7 +2489,7 @@
     "min-height": "100vh"
   },
   "min-w-0": {
-    "min-width": "0"
+    "min-width": "0px"
   },
   "min-w-full": {
     "min-width": "100%"
