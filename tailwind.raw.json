@@ -1,7 +1,4 @@
 {
-  "container": {
-    "width": "100%"
-  },
   "sr-only": {
     "position": "absolute",
     "width": "1px",

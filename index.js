@@ -84,7 +84,7 @@ function touplesToCssDict(touples) {
 //             // .slice(0, 10)
 //             .map(([twClass, touples], index, arr) => {
 //                 console.log(twClass, index, '/', arr.length - 1);
-//                 return [twClass, normalizeCssJson(touples)];
+//                 return [twClass, extendCssJsonWithNormalized(touples)];
 //             })
 //             .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
 //     );
@@ -127,7 +127,7 @@ async function extractSingleClasses(css) {
     );
 }
 
-function normalizeCssJson(touples) {
+function extendCssJsonWithNormalized(touples) {
     const html = `<!DOCTYPE html><style>#test{${touplesToCssDict(touples)}}</style><div id="test" />`;
     const dom = new JSDOM(html);
 
@@ -135,7 +135,9 @@ function normalizeCssJson(touples) {
     const computedStyle = dom.window.getComputedStyle(main);
     const { display, visibility, ...normalized } = computedStyle._values;
 
-    return normalized;
+    const inputAsObject = Object.fromEntries(touples);
+
+    return { ...inputAsObject, ...normalized };
 }
 
 function omitShorthands(obj) {
@@ -148,17 +150,18 @@ async function normalizeSingleClasses(css) {
     return Object.fromEntries(
         Object.entries(singleClassesJson)
             // .slice(0, 10)
-            .map(([twClass, touples]) => [twClass, normalizeCssJson(touples)])
-            .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
+            .map(([twClass, touples]) => [twClass, extendCssJsonWithNormalized(touples)]),
+        // .map(([twClass, touples]) => [twClass, omitShorthands(touples)]),
     );
 }
 
-function narrowDownNormalizedJsons(normalizedTailwind, normalizedCssMap) {
-    const narrowed = Object.entries(normalizedTailwind).filter(([twClass, value], index) => {
-        return isSubset(normalizedCssMap, value);
-    });
-    const result = Object.fromEntries(
-        narrowed.filter(([twClass, value], index, arr) => {
+function filterTailwind(normalizedTailwind, normalizedCssMap) {
+    const resultEntries = Object.entries(normalizedTailwind)
+        .filter(([twClass, value], index) => {
+            return isSubset(normalizedCssMap, value);
+        })
+        // remove redundants
+        .filter(([twClass, value], index, arr) => {
             for (let i = 0; i < arr.length; i++) {
                 if (i === index) {
                     continue;
@@ -168,14 +171,13 @@ function narrowDownNormalizedJsons(normalizedTailwind, normalizedCssMap) {
                 }
             }
             return true;
-        }),
-    );
+        });
 
-    console.log(narrowed);
+    const result = Object.fromEntries(resultEntries);
 
     const resultMap = Object.keys(
-        narrowed.reduce(
-            (acc, [cx, map]) => ({
+        resultEntries.reduce(
+            (acc, [twClass, map]) => ({
                 ...acc,
                 ...map,
             }),
@@ -183,11 +185,8 @@ function narrowDownNormalizedJsons(normalizedTailwind, normalizedCssMap) {
         ),
     );
 
-    console.log('resultMap', resultMap);
-    console.log('normalizedCssMap keys', Object.keys(normalizedCssMap));
-
     const meta = {
-        missing: Object.keys(normalizedCssMap).filter((prop) => !resultMap[prop]),
+        missing: Object.keys(normalizedCssMap).filter((prop) => !resultMap.includes(prop)),
     };
 
     return {
@@ -199,13 +198,13 @@ function narrowDownNormalizedJsons(normalizedTailwind, normalizedCssMap) {
 (async () => {
     const css = await fs.readFile('./tailwind.css', 'utf8');
 
-    // const tailwindRaw = await extractSingleClasses(css);
-    const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
-    // await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
+    const tailwindRaw = await extractSingleClasses(css);
+    // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
+    await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
 
-    // const tailwindNormalized = await normalizeSingleClasses(css);
-    const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
-    // await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
+    const tailwindNormalized = await normalizeSingleClasses(css);
+    // const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
+    await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
 
     // ///////////
 
@@ -222,12 +221,12 @@ function narrowDownNormalizedJsons(normalizedTailwind, normalizedCssMap) {
     const { alert: alertJsonRaw } = await extractSingleClasses(alertCss);
     const { alert: alertJsonNormalized } = await normalizeSingleClasses(alertCss);
 
-    const { result, meta } = narrowDownNormalizedJsons(tailwindNormalized, alertJsonNormalized);
+    const { result, meta } = filterTailwind(tailwindNormalized, alertJsonNormalized);
 
-    console.log(result);
-    console.log(Object.keys(result));
-
-    // TODO missing is fucked up
+    console.log();
+    console.log('====');
+    console.log('Results:', result);
+    console.log('Tailwind classes:', Object.keys(result));
     console.log('Missing:', meta.missing);
 
     /*
