@@ -9,7 +9,7 @@ const parseColor = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
 
 const CONFIG = {
-    COLOR_DELTA: 10,
+    COLOR_DELTA: 5,
 };
 
 function toNormalSize(v, rounder) {
@@ -175,7 +175,7 @@ function isVariable([prop, value]) {
     return prop.startsWith('--');
 }
 
-function isSubset(parent, child) {
+function isSubset(parent, child, strict) {
     const a = omitIf(parent, isVariable);
     const b = omitIf(child, isVariable);
     if (Object.keys(child).length === 0) {
@@ -185,12 +185,18 @@ function isSubset(parent, child) {
         return false;
     }
     return isMatchWith(a, b, (va, vb, key, aaa, bbb) => {
+        if (strict) {
+            return undefined;
+        }
+
         if (colorPropsSet.has(key)) {
             const x = parseColor(va).toRgbaArray();
             const y = parseColor(vb).toRgbaArray();
             const distance = euclideanDistance(x, y);
             return distance < CONFIG.COLOR_DELTA;
         }
+
+        return undefined;
     });
 }
 
@@ -272,7 +278,7 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
                 if (i === index) {
                     continue;
                 }
-                if (isSubset(arr[i][1], value)) {
+                if (isSubset(arr[i][1], value, true)) {
                     return false;
                 }
             }
@@ -330,9 +336,6 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
 
     const { result, meta } = filterTailwind(tailwindNormalized, alertJsonNormalized);
 
-    console.log('alertJsonNormalized', alertJsonNormalized);
-    console.log();
-    console.log('====');
     console.log('Results:', result);
     console.log('Tailwind classes:', Object.keys(result).sort());
     console.log('Missing:', meta.missing);
