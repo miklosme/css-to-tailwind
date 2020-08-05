@@ -3,7 +3,8 @@ const fs = require('fs').promises;
 const { JSDOM } = require('jsdom');
 const isMatch = require('lodash.ismatch');
 const isEqual = require('lodash.isequal');
-const __toPX = require('to-px');
+const parseSize = require('to-px');
+const parseColor = require('css-color-converter');
 
 function toNormalSize(v) {
     // patch the npm package
@@ -15,7 +16,7 @@ function toNormalSize(v) {
         return v; // do not throw
     }
 
-    const px = __toPX(v);
+    const px = parseSize(v);
 
     if (typeof px === 'number') {
         return `${roundSize(px)}px`;
@@ -42,6 +43,10 @@ function normalizeToupleBySize([prop, value]) {
     return [prop, value];
 }
 
+function normalizeTouplesBySize(touples) {
+    return touples.map(normalizeToupleBySize);
+}
+
 const sizePropsSet = new Set([
     'width',
     'height',
@@ -55,6 +60,31 @@ const sizePropsSet = new Set([
     'margin-right',
     'margin-bottom',
     'margin-left',
+]);
+
+function normalizeTouplesByColor(touples) {
+    const variables = touples.filter((touple) => {
+        return touple[0].startsWith('--');
+    });
+    return touples.map(([prop, value]) => {
+        if (colorPropsSet.has(prop)) {
+            const resolvedValue = variables.reduce((str, [varN, varV]) => str.split(`var(${varN})`).join(varV), value);
+            const rgba = parseColor(resolvedValue).toRgbaArray();
+            return [prop, `rgba(${rgba.join(', ')})`];
+        }
+
+        return [prop, value];
+    });
+}
+
+const colorPropsSet = new Set([
+    'color',
+    'background-color',
+    'border-color',
+    'border-top-color',
+    'border-right-color',
+    'border-bottom-color',
+    'border-left-color',
 ]);
 
 const knownNonPxConvertableValuesSet = new Set(['100%', 'auto', '100vh', '100vw']);
@@ -205,9 +235,11 @@ function extendCssJsonWithNormalized(touples) {
 
     const inputAsObject = Object.fromEntries(touples);
 
-    const sizeNormalized = Object.fromEntries(Object.entries(normalized).map(normalizeToupleBySize));
+    const sizeNormalized = Object.fromEntries(
+        normalizeTouplesByColor(normalizeTouplesBySize(Object.entries(normalized))),
+    );
 
-    return { ...inputAsObject, ...sizeNormalized };
+    return sizeNormalized;
 }
 
 function omitShorthands(obj) {
@@ -266,18 +298,6 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
 }
 
 (async () => {
-    const css = await fs.readFile('./tailwind.css', 'utf8');
-
-    const tailwindRaw = await extractSingleClasses(css);
-    // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
-    await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
-
-    const tailwindNormalized = await normalizeSingleClasses(css);
-    // const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
-    await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
-
-    // ////////
-
     const alertCss = `.alert {
         position: relative;
         padding: 1.6rem 4.6rem;
@@ -292,6 +312,18 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
 
     // ///////////
 
+    const css = await fs.readFile('./tailwind.css', 'utf8');
+
+    const tailwindRaw = await extractSingleClasses(css);
+    // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
+    await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
+
+    const tailwindNormalized = await normalizeSingleClasses(css);
+    // const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
+    await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
+
+    // ////////
+
     const { result, meta } = filterTailwind(tailwindNormalized, alertJsonNormalized);
 
     console.log('alertJsonNormalized', alertJsonNormalized);
@@ -304,12 +336,11 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
     /*
         # Problems
 
-        - sizes
         - colors
+        - borders
 
         ## TODO
 
-        - fix "meta.missing"
         - default font size to convert rem to px
         - normalize colors https://www.npmjs.com/package/css-color-converter#torgbaarray
         - color distance
