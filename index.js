@@ -496,10 +496,7 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 
         console.log(emoji, chalk.bold(`.${cssClass}`), tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '');
         if (error) {
-            console.log('ℹ️ ', error);
-        }
-        if (missing.length) {
-            console.log('ℹ️  Missing CSS:\n', chalk.green(missing));
+            console.log('ℹ️ ', error, missing.length ? `Missing CSS:\n${chalk.green(missing)}` : '');
         }
         console.log();
     });
