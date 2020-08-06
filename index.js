@@ -188,7 +188,16 @@ async function parseSingleClasses(css) {
     const ast = await parse(css);
     const result = {};
     ast.walkRules((rule) => {
-        if (rule.parent.type === 'root' && /^\.[a-zA-Z0-9_:\/-]+$/.test(rule.selector)) {
+        const topLevel =
+            rule.parent.type === 'root' ||
+            (rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)');
+
+        // if (topLevel) console.log(rule.selector)
+
+        const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
+
+        if (topLevel && isSingleClass) {
+            // if (rule.parent.type === 'root' && /^\.\s+$/.test(rule.selector)) {
             const selector = rule.selector.slice(1);
             rule.walkDecls((decl) => {
                 if (!result[selector]) {
@@ -198,6 +207,7 @@ async function parseSingleClasses(css) {
             });
         }
     });
+
     return result;
 }
 
@@ -220,99 +230,119 @@ function resolveLocalVariables(touples) {
     });
 }
 
-function normalize(value) {
-    return Object.fromEntries(
-        normalizeTouplesByColor(
-            normalizeTouplesForBorder(normalizeTouplesForBorderRadius(normalizeTouplesBySize(Object.entries(value)))),
-        ),
-    );
-}
-
-function extendCssJsonWithNormalized(touples) {
+function normalizeShorthands(touples) {
     const declaration = new CSSStyleDeclaration();
-    const resolvedTouples = resolveLocalVariables(touples);
-    resolvedTouples.forEach(([prop, value]) => {
+
+    touples.forEach(([prop, value]) => {
         declaration.setProperty(prop, value);
     });
 
-    return normalize(declaration.getNonShorthandValues());
+    return Object.entries(declaration.getNonShorthandValues());
 }
 
-async function normalizeSingleClasses(css) {
-    const singleClassesJson = await parseSingleClasses(css);
+function normalizeCssMap(touples) {
+    return normalizeTouplesByColor(
+        normalizeTouplesForBorder(normalizeTouplesForBorderRadius(normalizeTouplesBySize(touples))),
+    );
+}
 
+function normalizeDictOfTouples(dict, fn) {
     return Object.fromEntries(
-        Object.entries(singleClassesJson).map(([twClass, touples]) => {
-            return [twClass, extendCssJsonWithNormalized(touples)];
+        Object.entries(dict).map(([twClass, touples]) => {
+            return [twClass, fn(touples)];
         }),
     );
 }
 
-function filterTailwind(normalizedTailwind, normalizedCssMap, cssClass) {
-    const cssMap = normalizedCssMap[cssClass];
-    const resultEntries = Object.entries(normalizedTailwind)
-        .filter(([twClass, value], index) => {
-            return isSubset(cssMap, value);
-        })
-        // remove redundants
-        .filter(([twClass, value], index, arr) => {
-            for (let i = 0; i < arr.length; i++) {
-                if (i === index) {
-                    continue;
-                }
-                if (isSubset(arr[i][1], value, true)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+async function cssToTailwind(tailwindCss, inputCss) {
+    const tailwindSingleClassesJson = await parseSingleClasses(tailwindCss);
+    const inputSingleClassesJson = await parseSingleClasses(inputCss);
 
-    const resultSheet = Object.fromEntries(resultEntries);
-    const resultArray = Object.keys(resultSheet).sort();
-    const tailwind = resultArray.join(' ');
+    const tailwindResolvedLocalVariables = normalizeDictOfTouples(tailwindSingleClassesJson, resolveLocalVariables);
+    const inputResolvedLocalVariables = normalizeDictOfTouples(inputSingleClassesJson, resolveLocalVariables);
 
-    const resultMap = Object.keys(
-        resultEntries.reduce(
-            (acc, [twClass, map]) => ({
-                ...acc,
-                ...map,
-            }),
-            {},
-        ),
-    );
+    const tailwindNormalizedShorthands = normalizeDictOfTouples(tailwindResolvedLocalVariables, normalizeShorthands);
+    const inputNormalizedShorthands = normalizeDictOfTouples(inputResolvedLocalVariables, normalizeShorthands);
 
-    const missing = Object.entries(cssMap)
-        .filter(([prop]) => !resultMap.includes(prop))
-        .reduce((str, [prop, value]) => `${str}\t${prop}: ${value}\n`, '');
+    const tailwindNormalizedCssValues = normalizeDictOfTouples(tailwindNormalizedShorthands, normalizeCssMap);
+    const inputNormalizedCssValues = normalizeDictOfTouples(inputNormalizedShorthands, normalizeCssMap);
+    
+    const tailwindNormalized = normalizeDictOfTouples(tailwindNormalizedCssValues, Object.fromEntries);
+    const inputNormalized = normalizeDictOfTouples(inputNormalizedCssValues, Object.fromEntries);
 
-    let error = null;
-    let emoji = '✅';
+    await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
 
-    if (missing.length) {
-        emoji = '⚠️ ';
-    }
+    return Object.keys(inputSingleClassesJson).map((cssClass) => {
+        const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, cssClass);
 
-    if (resultArray.length === 0) {
-        emoji = '❌';
+        const resultArray = Object.keys(filteredTailwind).sort();
+        const resultSheet = Object.entries(tailwindSingleClassesJson).filter(([cn]) => resultArray.includes(cn));
+        const tailwind = resultArray.join(' ');
+
+        const resultMap = Object.keys(
+            Object.fromEntries(resultSheet.reduce((acc, [twClass, map]) => [...acc, ...map], [])),
+        );
+
+        const missing = Object.entries(inputNormalized[cssClass])
+            .filter(([prop]) => !resultMap.includes(prop))
+            .reduce((str, [prop, value]) => `${str}\t${prop}: ${Object.fromEntries(inputNormalizedShorthands[cssClass])[prop]}\n`, '');
+
+        let error = null;
+        let emoji = '✅';
+
         if (missing.length) {
-            error = 'Could not match any Tailwind classes.';
-        } else {
-            error = 'This class only contained unsupported CSS.';
+            emoji = '⚠️ ';
         }
-    }
 
-    return {
-        cssClass,
-        tailwind,
-        resultArray,
-        resultSheet,
-        missing,
-        emoji,
-        error,
-    };
+        if (resultArray.length === 0) {
+            emoji = '❌';
+            if (missing.length) {
+                error = 'Could not match any Tailwind classes.';
+            } else {
+                error = 'This class only contained unsupported CSS.';
+            }
+        }
+
+        return {
+            cssClass,
+            tailwind,
+            resultArray,
+            resultSheet: Object.fromEntries(resultSheet.map(([cn, touples]) => [cn, Object.fromEntries(touples)])),
+            missing,
+            emoji,
+            error,
+        };
+    });
+}
+
+function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
+    const cssMap = inputNormalized[cssClass];
+    return Object.fromEntries(
+        Object.entries(tailwindNormalized)
+            .filter(([twClass, value], index) => {
+                return isSubset(cssMap, value);
+            })
+            // remove redundants
+            .filter(([twClass, value], index, arr) => {
+                for (let i = 0; i < arr.length; i++) {
+                    if (i === index) {
+                        continue;
+                    }
+                    if (isSubset(arr[i][1], value, true)) {
+                        return false;
+                    }
+                }
+                return true;
+            }),
+    );
 }
 
 (async () => {
+    const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
+
+    // const tailwindRaw = await extractSingleClasses(css);
+    // // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
+
     const inputCss = `.alert {
         position: relative;
         padding: 1.6rem 4.6rem;
@@ -411,27 +441,13 @@ function filterTailwind(normalizedTailwind, normalizedCssMap, cssClass) {
       
       `;
 
-    const input = await normalizeSingleClasses(inputCss);
+    const input = await parseSingleClasses(inputCss);
 
-    // ///////////
-
-    const css = await fs.readFile('./tailwind.css', 'utf8');
-
-    // const tailwindRaw = await extractSingleClasses(css);
-    // // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
-    // await fs.writeFile('./tailwind.raw.json', JSON.stringify(tailwindRaw, null, 2), 'utf8');
-
-    const tailwindNormalized = await normalizeSingleClasses(css);
-    // const tailwindNormalized = JSON.parse(await fs.readFile('./tailwind.normalized.json', 'utf8'));
-    await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
-
-    // ////////
-
-    const results = Object.keys(input).map((cssClass) => filterTailwind(tailwindNormalized, input, cssClass));
+    const results = await cssToTailwind(tailwindCss, inputCss);
 
     const resultsWithMissing = results.filter((result) => result.missing.length);
 
-    resultsWithMissing.forEach((result) => {
+    results.forEach((result) => {
         const { cssClass, tailwind, missing, resultSheet, emoji, error } = result;
 
         console.log(emoji, chalk.bold(`.${cssClass}`), tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '');
@@ -452,5 +468,6 @@ function filterTailwind(normalizedTailwind, normalizedCssMap, cssClass) {
     TODO
 
         - CONFIG font size to convert rem to px
+        - result sort order should be the order as in tailwind.css
     */
 })();
