@@ -248,10 +248,11 @@ async function normalizeSingleClasses(css) {
     );
 }
 
-function filterTailwind(normalizedTailwind, normalizedCssMap) {
+function filterTailwind(normalizedTailwind, normalizedCssMap, cssClass) {
+    const cssMap = normalizedCssMap[cssClass];
     const resultEntries = Object.entries(normalizedTailwind)
         .filter(([twClass, value], index) => {
-            return isSubset(normalizedCssMap, value);
+            return isSubset(cssMap, value);
         })
         // remove redundants
         .filter(([twClass, value], index, arr) => {
@@ -267,7 +268,8 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         });
 
     const resultSheet = Object.fromEntries(resultEntries);
-    const result = Object.keys(resultSheet).sort().join(' ');
+    const resultArray = Object.keys(resultSheet).sort();
+    const tailwind = resultArray.join(' ');
 
     const resultMap = Object.keys(
         resultEntries.reduce(
@@ -279,7 +281,7 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         ),
     );
 
-    const missing = Object.entries(normalizedCssMap)
+    const missing = Object.entries(cssMap)
         .filter(([prop]) => !resultMap.includes(prop))
         .reduce((str, [prop, value]) => `${str}\t${prop}: ${value}\n`, '');
 
@@ -290,13 +292,19 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         emoji = '⚠️ ';
     }
 
-    if (result.length === 0 && missing.length === 0) {
+    if (resultArray.length === 0) {
         emoji = '❌';
-        error = 'This class only contained unsupported CSS.';
+        if (missing.length) {
+            error = 'Could not match any Tailwind classes.';
+        } else {
+            error = 'This class only contained unsupported CSS.';
+        }
     }
 
     return {
-        result,
+        cssClass,
+        tailwind,
+        resultArray,
         resultSheet,
         missing,
         emoji,
@@ -419,19 +427,25 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
 
     // ////////
 
-    Object.entries(input).forEach(([cn, ii]) => {
-        const { result, missing, resultSheet, emoji, error } = filterTailwind(tailwindNormalized, ii);
+    const results = Object.keys(input).map((cssClass) => filterTailwind(tailwindNormalized, input, cssClass));
 
-        console.log(emoji, `.${chalk.bold(cn)} --> [`, chalk.italic(result), ']');
+    const resultsWithMissing = results.filter((result) => result.missing.length);
+
+    resultsWithMissing.forEach((result) => {
+        const { cssClass, tailwind, missing, resultSheet, emoji, error } = result;
+
+        console.log(emoji, chalk.bold(`.${cssClass}`), tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '');
         console.log(resultSheet);
         if (error) {
-            console.log(error);
+            console.log('ℹ️ ', error);
         }
         if (missing.length) {
             console.log('ℹ️  Missing CSS:\n', chalk.green(missing));
         }
         console.log();
     });
+
+    console.log('Classes with missing:', resultsWithMissing.length);
 
     /*
 
