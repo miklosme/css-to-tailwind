@@ -191,9 +191,11 @@ async function parseSingleClasses(css) {
         const topLevel = rule.parent.type === 'root';
         const mediaMinWidth1280 = rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)';
         const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
-        const isBlacklisted = /placeholder|focus|focus|hover/.test(rule.selector);
+        const isUnsupportedSelector = /placeholder|focus|focus|hover|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
+            rule.selector,
+        );
 
-        if ((topLevel || mediaMinWidth1280) && isSingleClass && !isBlacklisted) {
+        if ((topLevel || mediaMinWidth1280) && isSingleClass && !isUnsupportedSelector) {
             const selector = rule.selector.slice(1);
             rule.walkDecls((decl) => {
                 if (!result[selector]) {
@@ -297,6 +299,7 @@ async function cssToTailwind(tailwindCss, inputCss) {
         if (resultArray.length === 0) {
             emoji = '❌';
             if (missing.length) {
+                emoji = '⚠️ ';
                 error = 'Could not match any Tailwind classes.';
             } else {
                 error = 'This class only contained unsupported CSS.';
@@ -466,5 +469,9 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 
         - CONFIG font size to convert rem to px
         - result sort order should be the order as in tailwind.css
+        - .guest-layout__content-inner junk:
+            'm-0': { margin: '0' },
+            'm-px': { margin: '1px' },
+            'm-2px': { margin: '2px' },
     */
 })();
