@@ -7,16 +7,13 @@ const isEqual = require('lodash.isequal');
 const parseSize = require('to-px');
 const parseColor = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
+const chalk = require('chalk');
 
 const CONFIG = {
     COLOR_DELTA: 5,
 };
 
 function toNormalSize(v, rounder) {
-    if (knownNonPxConvertableValuesSet.has(v)) {
-        return v; // do not throw at the end of this fn
-    }
-
     // patch the npm package, bc it returns null for '0'
     const px = v === '0' ? 0 : parseSize(v);
 
@@ -24,17 +21,12 @@ function toNormalSize(v, rounder) {
         return `${rounder(px)}px`;
     }
 
-    throw new Error(`cannot convert ${v} to px`);
+    return v;
 }
 
 function normalizeToupleBySize([prop, value]) {
     if (sizePropsSet.has(prop)) {
-        try {
-            return [prop, toNormalSize(value, roundCommonSize)];
-        } catch (e) {
-            console.log(e);
-            return [prop, value];
-        }
+        return [prop, toNormalSize(value, roundCommonSize)];
     }
 
     return [prop, value];
@@ -43,12 +35,7 @@ function normalizeToupleBySize([prop, value]) {
 function normalizeTouplesForBorderRadius(touples) {
     return touples.map(([prop, value]) => {
         if (prop === 'border-radius') {
-            try {
-                return [prop, toNormalSize(value, roundBorderRadius)];
-            } catch (e) {
-                console.log(e);
-                return [prop, value];
-            }
+            return [prop, toNormalSize(value, roundBorderRadius)];
         }
         return [prop, value];
     });
@@ -57,12 +44,7 @@ function normalizeTouplesForBorderRadius(touples) {
 function normalizeTouplesForBorder(touples) {
     return touples.map(([prop, value]) => {
         if (borderSizePropsSet.has(prop)) {
-            try {
-                return [prop, toNormalSize(value, roundBorder)];
-            } catch (e) {
-                console.log(e);
-                return [prop, value];
-            }
+            return [prop, toNormalSize(value, roundBorder)];
         }
         return [prop, value];
     });
@@ -117,8 +99,6 @@ function normalizeTouplesByColor(touples) {
 }
 
 const colorPropsSet = new Set(Array.from(allProperties).filter((prop) => prop.includes('color')));
-
-const knownNonPxConvertableValuesSet = new Set(['100%', '100vh', '100vw', 'auto', 'none']);
 
 // TODO get this form tailwind config
 const sizes = [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256];
@@ -178,7 +158,7 @@ function isVariable([prop, value]) {
 function isSubset(parent, child, strict) {
     const a = omitIf(parent, isVariable);
     const b = omitIf(child, isVariable);
-    if (Object.keys(child).length === 0) {
+    if (Object.keys(a).length === 0 || Object.keys(b).length === 0) {
         return false;
     }
     if (isEqual(a, b)) {
@@ -203,11 +183,12 @@ function isSubset(parent, child, strict) {
 function touplesToCssDict(touples) {
     return touples.map(([prop, value]) => `${prop}: ${value}`).join(';');
 }
+
 async function parseSingleClasses(css) {
     const ast = await parse(css);
     const result = {};
     ast.walkRules((rule) => {
-        if (rule.parent.type === 'root' && /^\.[a-z0-9-]+$/.test(rule.selector)) {
+        if (rule.parent.type === 'root' && /^\.[a-zA-Z0-9_:\/-]+$/.test(rule.selector)) {
             const selector = rule.selector.slice(1);
             rule.walkDecls((decl) => {
                 if (!result[selector]) {
@@ -285,7 +266,8 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
             return true;
         });
 
-    const result = Object.fromEntries(resultEntries);
+    const resultSheet = Object.fromEntries(resultEntries);
+    const result = Object.keys(resultSheet).sort().join(' ');
 
     const resultMap = Object.keys(
         resultEntries.reduce(
@@ -297,18 +279,33 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         ),
     );
 
-    const meta = {
-        missing: Object.keys(normalizedCssMap).filter((prop) => !resultMap.includes(prop)),
-    };
+    const missing = Object.entries(normalizedCssMap)
+        .filter(([prop]) => !resultMap.includes(prop))
+        .reduce((str, [prop, value]) => `${str}\t${prop}: ${value}\n`, '');
+
+    let error = null;
+    let emoji = '✅';
+
+    if (missing.length) {
+        emoji = '⚠️ ';
+    }
+
+    if (result.length === 0 && missing.length === 0) {
+        emoji = '❌';
+        error = 'This class only contained unsupported CSS.';
+    }
 
     return {
         result,
-        meta,
+        resultSheet,
+        missing,
+        emoji,
+        error,
     };
 }
 
 (async () => {
-    const alertCss = `.alert {
+    const inputCss = `.alert {
         position: relative;
         padding: 1.6rem 4.6rem;
         margin-bottom: 1.6rem;
@@ -316,9 +313,97 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
         color: #fff;
         border-radius: 0.2rem;
         width: 100%;
-      } `;
+      } 
+      
+      .guest-layout__logo {
+        margin-bottom: 1.6rem;
+        min-height: 4rem;
+        display: flex;
+        justify-content: center;
+      }
+      
+      .guest-layout__container {
+        background: #ffffff;
+        border: 1px solid #e5e5e5;
+        border-radius: 0.2rem;
+      } 
+      
+      .guest-layout {
+        margin: 8rem auto;
+        max-width: fit-content;
+      }
+      
+      .guest-layout__header {
+        font-weight: 400;
+        font-size: 2rem;
+        line-height: 3rem;
+        letter-spacing: 0.03rem;
+        padding: 2.4rem;
+        border-bottom: 1px solid #e5e5e5;
+      }
+      
+      .guest-layout__footer {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: row-reverse;
+        padding: 2.4rem 3rem;
+        border-top: 1px solid #e5e5e5;
+      }
+      
+      .guest-layout__footer--compact {
+        border: none;
+        padding: 0;
+        margin-top: 1.6rem;
+      }
+      
+      .guest-layout__content {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 38rem;
+      }
+      
+      .guest-layout__content--with-side-content {
+        width: 76rem;
+      }
+      .guest-layout__content--with-side-contentdfdf {
+        width: 50%;
+      }
+      
+      .guest-layout__content--with-side-contentdfdf {
+        width: 50%;
+      }
+      .guest-layout__content--with-separatordfdfdf{
+        border-right: 1px solid #e5e5e5;
+      }
+      .guest-layout__content-inner {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        margin: 0;
+        padding: 3rem;
+      }
+      
+      .guest-layout__content--with-separatordfdf {
+        background: unset;
+      }
+      .guest-layout__side-content {
+        width: 50%;
+        background: #e3e6e6;
+        padding: 3rem;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+      }
+      .guest-layout__dfdfdfdf {
+        margin-top: 0;
+      }
+      
+      `;
 
-    const { alert: alertJsonNormalized } = await normalizeSingleClasses(alertCss);
+    const input = await normalizeSingleClasses(inputCss);
 
     // ///////////
 
@@ -334,11 +419,19 @@ function filterTailwind(normalizedTailwind, normalizedCssMap) {
 
     // ////////
 
-    const { result, meta } = filterTailwind(tailwindNormalized, alertJsonNormalized);
+    Object.entries(input).forEach(([cn, ii]) => {
+        const { result, missing, resultSheet, emoji, error } = filterTailwind(tailwindNormalized, ii);
 
-    console.log('Results:', result);
-    console.log('Tailwind classes:', Object.keys(result).sort());
-    console.log('Missing:', meta.missing);
+        console.log(emoji, `.${chalk.bold(cn)} --> [`, chalk.italic(result), ']');
+        console.log(resultSheet);
+        if (error) {
+            console.log(error);
+        }
+        if (missing.length) {
+            console.log('ℹ️  Missing CSS:\n', chalk.green(missing));
+        }
+        console.log();
+    });
 
     /*
 

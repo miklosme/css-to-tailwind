@@ -1178,6 +1178,11 @@
   "float-none": {
     "float": "none"
   },
+  "clearfix:after": {
+    "content": "\"\"",
+    "display": "table",
+    "clear": "both"
+  },
   "clear-left": {
     "clear": "left"
   },
@@ -3111,6 +3116,881 @@
   },
   "pl-2px": {
     "padding-left": "0px"
+  },
+  "placeholder-neutral-0::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 255, 255, 1)"
+  },
+  "placeholder-neutral-0::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 255, 255, 1)"
+  },
+  "placeholder-neutral-0:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 255, 255, 1)"
+  },
+  "placeholder-neutral-0::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 255, 255, 1)"
+  },
+  "placeholder-neutral-0::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 255, 255, 1)"
+  },
+  "placeholder-neutral-10::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 252, 252, 1)"
+  },
+  "placeholder-neutral-10::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 252, 252, 1)"
+  },
+  "placeholder-neutral-10:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 252, 252, 1)"
+  },
+  "placeholder-neutral-10::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 252, 252, 1)"
+  },
+  "placeholder-neutral-10::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 252, 252, 1)"
+  },
+  "placeholder-neutral-30::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(246, 246, 246, 1)"
+  },
+  "placeholder-neutral-30::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(246, 246, 246, 1)"
+  },
+  "placeholder-neutral-30:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(246, 246, 246, 1)"
+  },
+  "placeholder-neutral-30::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(246, 246, 246, 1)"
+  },
+  "placeholder-neutral-30::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(246, 246, 246, 1)"
+  },
+  "placeholder-neutral-50::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(242, 242, 242, 1)"
+  },
+  "placeholder-neutral-50::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(242, 242, 242, 1)"
+  },
+  "placeholder-neutral-50:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(242, 242, 242, 1)"
+  },
+  "placeholder-neutral-50::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(242, 242, 242, 1)"
+  },
+  "placeholder-neutral-50::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(242, 242, 242, 1)"
+  },
+  "placeholder-neutral-100::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(230, 230, 230, 1)"
+  },
+  "placeholder-neutral-100::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(230, 230, 230, 1)"
+  },
+  "placeholder-neutral-100:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(230, 230, 230, 1)"
+  },
+  "placeholder-neutral-100::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(230, 230, 230, 1)"
+  },
+  "placeholder-neutral-100::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(230, 230, 230, 1)"
+  },
+  "placeholder-neutral-150::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(217, 217, 217, 1)"
+  },
+  "placeholder-neutral-150::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(217, 217, 217, 1)"
+  },
+  "placeholder-neutral-150:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(217, 217, 217, 1)"
+  },
+  "placeholder-neutral-150::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(217, 217, 217, 1)"
+  },
+  "placeholder-neutral-150::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(217, 217, 217, 1)"
+  },
+  "placeholder-neutral-200::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(204, 204, 204, 1)"
+  },
+  "placeholder-neutral-200::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(204, 204, 204, 1)"
+  },
+  "placeholder-neutral-200:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(204, 204, 204, 1)"
+  },
+  "placeholder-neutral-200::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(204, 204, 204, 1)"
+  },
+  "placeholder-neutral-200::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(204, 204, 204, 1)"
+  },
+  "placeholder-neutral-300::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(179, 179, 179, 1)"
+  },
+  "placeholder-neutral-300::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(179, 179, 179, 1)"
+  },
+  "placeholder-neutral-300:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(179, 179, 179, 1)"
+  },
+  "placeholder-neutral-300::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(179, 179, 179, 1)"
+  },
+  "placeholder-neutral-300::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(179, 179, 179, 1)"
+  },
+  "placeholder-neutral-400::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(153, 153, 153, 1)"
+  },
+  "placeholder-neutral-400::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(153, 153, 153, 1)"
+  },
+  "placeholder-neutral-400:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(153, 153, 153, 1)"
+  },
+  "placeholder-neutral-400::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(153, 153, 153, 1)"
+  },
+  "placeholder-neutral-400::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(153, 153, 153, 1)"
+  },
+  "placeholder-neutral-500::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(128, 128, 128, 1)"
+  },
+  "placeholder-neutral-500::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(128, 128, 128, 1)"
+  },
+  "placeholder-neutral-500:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(128, 128, 128, 1)"
+  },
+  "placeholder-neutral-500::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(128, 128, 128, 1)"
+  },
+  "placeholder-neutral-500::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(128, 128, 128, 1)"
+  },
+  "placeholder-neutral-600::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(102, 102, 102, 1)"
+  },
+  "placeholder-neutral-600::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(102, 102, 102, 1)"
+  },
+  "placeholder-neutral-600:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(102, 102, 102, 1)"
+  },
+  "placeholder-neutral-600::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(102, 102, 102, 1)"
+  },
+  "placeholder-neutral-600::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(102, 102, 102, 1)"
+  },
+  "placeholder-neutral-700::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(77, 77, 77, 1)"
+  },
+  "placeholder-neutral-700::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(77, 77, 77, 1)"
+  },
+  "placeholder-neutral-700:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(77, 77, 77, 1)"
+  },
+  "placeholder-neutral-700::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(77, 77, 77, 1)"
+  },
+  "placeholder-neutral-700::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(77, 77, 77, 1)"
+  },
+  "placeholder-neutral-800::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(51, 51, 51, 1)"
+  },
+  "placeholder-neutral-800::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(51, 51, 51, 1)"
+  },
+  "placeholder-neutral-800:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(51, 51, 51, 1)"
+  },
+  "placeholder-neutral-800::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(51, 51, 51, 1)"
+  },
+  "placeholder-neutral-800::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(51, 51, 51, 1)"
+  },
+  "placeholder-neutral-900::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(26, 26, 26, 1)"
+  },
+  "placeholder-neutral-900::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(26, 26, 26, 1)"
+  },
+  "placeholder-neutral-900:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(26, 26, 26, 1)"
+  },
+  "placeholder-neutral-900::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(26, 26, 26, 1)"
+  },
+  "placeholder-neutral-900::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(26, 26, 26, 1)"
+  },
+  "placeholder-neutral-1000::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(0, 0, 0, 1)"
+  },
+  "placeholder-neutral-1000::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(0, 0, 0, 1)"
+  },
+  "placeholder-neutral-1000:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(0, 0, 0, 1)"
+  },
+  "placeholder-neutral-1000::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(0, 0, 0, 1)"
+  },
+  "placeholder-neutral-1000::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(0, 0, 0, 1)"
+  },
+  "placeholder-teal-100::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(241, 248, 248, 1)"
+  },
+  "placeholder-teal-100::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(241, 248, 248, 1)"
+  },
+  "placeholder-teal-100:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(241, 248, 248, 1)"
+  },
+  "placeholder-teal-100::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(241, 248, 248, 1)"
+  },
+  "placeholder-teal-100::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(241, 248, 248, 1)"
+  },
+  "placeholder-teal-200::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(226, 242, 240, 1)"
+  },
+  "placeholder-teal-200::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(226, 242, 240, 1)"
+  },
+  "placeholder-teal-200:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(226, 242, 240, 1)"
+  },
+  "placeholder-teal-200::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(226, 242, 240, 1)"
+  },
+  "placeholder-teal-200::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(226, 242, 240, 1)"
+  },
+  "placeholder-teal-300::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(182, 222, 218, 1)"
+  },
+  "placeholder-teal-300::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(182, 222, 218, 1)"
+  },
+  "placeholder-teal-300:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(182, 222, 218, 1)"
+  },
+  "placeholder-teal-300::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(182, 222, 218, 1)"
+  },
+  "placeholder-teal-300::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(182, 222, 218, 1)"
+  },
+  "placeholder-teal-400::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(110, 190, 182, 1)"
+  },
+  "placeholder-teal-400::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(110, 190, 182, 1)"
+  },
+  "placeholder-teal-400:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(110, 190, 182, 1)"
+  },
+  "placeholder-teal-400::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(110, 190, 182, 1)"
+  },
+  "placeholder-teal-400::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(110, 190, 182, 1)"
+  },
+  "placeholder-teal-500::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(96, 166, 159, 1)"
+  },
+  "placeholder-teal-500::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(96, 166, 159, 1)"
+  },
+  "placeholder-teal-500:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(96, 166, 159, 1)"
+  },
+  "placeholder-teal-500::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(96, 166, 159, 1)"
+  },
+  "placeholder-teal-500::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(96, 166, 159, 1)"
+  },
+  "placeholder-teal-600::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 128, 121, 1)"
+  },
+  "placeholder-teal-600::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 128, 121, 1)"
+  },
+  "placeholder-teal-600:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 128, 121, 1)"
+  },
+  "placeholder-teal-600::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 128, 121, 1)"
+  },
+  "placeholder-teal-600::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 128, 121, 1)"
+  },
+  "placeholder-stix-grouping::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(186, 102, 207, 1)"
+  },
+  "placeholder-stix-grouping::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(186, 102, 207, 1)"
+  },
+  "placeholder-stix-grouping:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(186, 102, 207, 1)"
+  },
+  "placeholder-stix-grouping::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(186, 102, 207, 1)"
+  },
+  "placeholder-stix-grouping::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(186, 102, 207, 1)"
+  },
+  "placeholder-stix-tool::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(149, 143, 216, 1)"
+  },
+  "placeholder-stix-tool::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(149, 143, 216, 1)"
+  },
+  "placeholder-stix-tool:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(149, 143, 216, 1)"
+  },
+  "placeholder-stix-tool::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(149, 143, 216, 1)"
+  },
+  "placeholder-stix-tool::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(149, 143, 216, 1)"
+  },
+  "placeholder-stix-malware-analysis::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(249, 192, 215, 1)"
+  },
+  "placeholder-stix-malware-analysis::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(249, 192, 215, 1)"
+  },
+  "placeholder-stix-malware-analysis:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(249, 192, 215, 1)"
+  },
+  "placeholder-stix-malware-analysis::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(249, 192, 215, 1)"
+  },
+  "placeholder-stix-malware-analysis::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(249, 192, 215, 1)"
+  },
+  "placeholder-stix-malware::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(224, 146, 225, 1)"
+  },
+  "placeholder-stix-malware::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(224, 146, 225, 1)"
+  },
+  "placeholder-stix-malware:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(224, 146, 225, 1)"
+  },
+  "placeholder-stix-malware::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(224, 146, 225, 1)"
+  },
+  "placeholder-stix-malware::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(224, 146, 225, 1)"
+  },
+  "placeholder-stix-attack-pattern::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(97, 163, 255, 1)"
+  },
+  "placeholder-stix-attack-pattern::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(97, 163, 255, 1)"
+  },
+  "placeholder-stix-attack-pattern:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(97, 163, 255, 1)"
+  },
+  "placeholder-stix-attack-pattern::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(97, 163, 255, 1)"
+  },
+  "placeholder-stix-attack-pattern::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(97, 163, 255, 1)"
+  },
+  "placeholder-stix-intrusion-set::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(130, 188, 239, 1)"
+  },
+  "placeholder-stix-intrusion-set::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(130, 188, 239, 1)"
+  },
+  "placeholder-stix-intrusion-set:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(130, 188, 239, 1)"
+  },
+  "placeholder-stix-intrusion-set::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(130, 188, 239, 1)"
+  },
+  "placeholder-stix-intrusion-set::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(130, 188, 239, 1)"
+  },
+  "placeholder-stix-campaign::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(45, 169, 196, 1)"
+  },
+  "placeholder-stix-campaign::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(45, 169, 196, 1)"
+  },
+  "placeholder-stix-campaign:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(45, 169, 196, 1)"
+  },
+  "placeholder-stix-campaign::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(45, 169, 196, 1)"
+  },
+  "placeholder-stix-campaign::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(45, 169, 196, 1)"
+  },
+  "placeholder-stix-infrastructure::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(174, 216, 192, 1)"
+  },
+  "placeholder-stix-infrastructure::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(174, 216, 192, 1)"
+  },
+  "placeholder-stix-infrastructure:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(174, 216, 192, 1)"
+  },
+  "placeholder-stix-infrastructure::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(174, 216, 192, 1)"
+  },
+  "placeholder-stix-infrastructure::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(174, 216, 192, 1)"
+  },
+  "placeholder-stix-report::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(140, 174, 159, 1)"
+  },
+  "placeholder-stix-report::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(140, 174, 159, 1)"
+  },
+  "placeholder-stix-report:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(140, 174, 159, 1)"
+  },
+  "placeholder-stix-report::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(140, 174, 159, 1)"
+  },
+  "placeholder-stix-report::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(140, 174, 159, 1)"
+  },
+  "placeholder-stix-course-of-action::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 186, 131, 1)"
+  },
+  "placeholder-stix-course-of-action::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 186, 131, 1)"
+  },
+  "placeholder-stix-course-of-action:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 186, 131, 1)"
+  },
+  "placeholder-stix-course-of-action::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 186, 131, 1)"
+  },
+  "placeholder-stix-course-of-action::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(60, 186, 131, 1)"
+  },
+  "placeholder-stix-vulnerability::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 194, 105, 1)"
+  },
+  "placeholder-stix-vulnerability::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 194, 105, 1)"
+  },
+  "placeholder-stix-vulnerability:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 194, 105, 1)"
+  },
+  "placeholder-stix-vulnerability::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 194, 105, 1)"
+  },
+  "placeholder-stix-vulnerability::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(252, 194, 105, 1)"
+  },
+  "placeholder-stix-indicator::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 177, 121, 1)"
+  },
+  "placeholder-stix-indicator::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 177, 121, 1)"
+  },
+  "placeholder-stix-indicator:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 177, 121, 1)"
+  },
+  "placeholder-stix-indicator::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 177, 121, 1)"
+  },
+  "placeholder-stix-indicator::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(255, 177, 121, 1)"
+  },
+  "placeholder-stix-sighting::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(243, 143, 143, 1)"
+  },
+  "placeholder-stix-sighting::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(243, 143, 143, 1)"
+  },
+  "placeholder-stix-sighting:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(243, 143, 143, 1)"
+  },
+  "placeholder-stix-sighting::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(243, 143, 143, 1)"
+  },
+  "placeholder-stix-sighting::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(243, 143, 143, 1)"
+  },
+  "placeholder-stix-threat-actor::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(236, 50, 117, 1)"
+  },
+  "placeholder-stix-threat-actor::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(236, 50, 117, 1)"
+  },
+  "placeholder-stix-threat-actor:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(236, 50, 117, 1)"
+  },
+  "placeholder-stix-threat-actor::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(236, 50, 117, 1)"
+  },
+  "placeholder-stix-threat-actor::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(236, 50, 117, 1)"
+  },
+  "placeholder-stix-identity::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(144, 149, 167, 1)"
+  },
+  "placeholder-stix-identity::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(144, 149, 167, 1)"
+  },
+  "placeholder-stix-identity:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(144, 149, 167, 1)"
+  },
+  "placeholder-stix-identity::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(144, 149, 167, 1)"
+  },
+  "placeholder-stix-identity::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(144, 149, 167, 1)"
+  },
+  "placeholder-stix-relationship::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 222, 232, 1)"
+  },
+  "placeholder-stix-relationship::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 222, 232, 1)"
+  },
+  "placeholder-stix-relationship:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 222, 232, 1)"
+  },
+  "placeholder-stix-relationship::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 222, 232, 1)"
+  },
+  "placeholder-stix-relationship::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 222, 232, 1)"
+  },
+  "placeholder-tlp-green::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 250, 208, 1)"
+  },
+  "placeholder-tlp-green::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 250, 208, 1)"
+  },
+  "placeholder-tlp-green:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 250, 208, 1)"
+  },
+  "placeholder-tlp-green::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 250, 208, 1)"
+  },
+  "placeholder-tlp-green::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(212, 250, 208, 1)"
+  },
+  "placeholder-tlp-amber::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 238, 216, 1)"
+  },
+  "placeholder-tlp-amber::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 238, 216, 1)"
+  },
+  "placeholder-tlp-amber:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 238, 216, 1)"
+  },
+  "placeholder-tlp-amber::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 238, 216, 1)"
+  },
+  "placeholder-tlp-amber::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 238, 216, 1)"
+  },
+  "placeholder-tlp-red::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 208, 208, 1)"
+  },
+  "placeholder-tlp-red::-moz-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 208, 208, 1)"
+  },
+  "placeholder-tlp-red:-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 208, 208, 1)"
+  },
+  "placeholder-tlp-red::-ms-input-placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 208, 208, 1)"
+  },
+  "placeholder-tlp-red::placeholder": {
+    "--placeholder-opacity": "1",
+    "color": "rgba(250, 208, 208, 1)"
+  },
+  "placeholder-opacity-0::-webkit-input-placeholder": {
+    "--placeholder-opacity": "0"
+  },
+  "placeholder-opacity-0::-moz-placeholder": {
+    "--placeholder-opacity": "0"
+  },
+  "placeholder-opacity-0:-ms-input-placeholder": {
+    "--placeholder-opacity": "0"
+  },
+  "placeholder-opacity-0::-ms-input-placeholder": {
+    "--placeholder-opacity": "0"
+  },
+  "placeholder-opacity-0::placeholder": {
+    "--placeholder-opacity": "0"
+  },
+  "placeholder-opacity-25::-webkit-input-placeholder": {
+    "--placeholder-opacity": "0.25"
+  },
+  "placeholder-opacity-25::-moz-placeholder": {
+    "--placeholder-opacity": "0.25"
+  },
+  "placeholder-opacity-25:-ms-input-placeholder": {
+    "--placeholder-opacity": "0.25"
+  },
+  "placeholder-opacity-25::-ms-input-placeholder": {
+    "--placeholder-opacity": "0.25"
+  },
+  "placeholder-opacity-25::placeholder": {
+    "--placeholder-opacity": "0.25"
+  },
+  "placeholder-opacity-50::-webkit-input-placeholder": {
+    "--placeholder-opacity": "0.5"
+  },
+  "placeholder-opacity-50::-moz-placeholder": {
+    "--placeholder-opacity": "0.5"
+  },
+  "placeholder-opacity-50:-ms-input-placeholder": {
+    "--placeholder-opacity": "0.5"
+  },
+  "placeholder-opacity-50::-ms-input-placeholder": {
+    "--placeholder-opacity": "0.5"
+  },
+  "placeholder-opacity-50::placeholder": {
+    "--placeholder-opacity": "0.5"
+  },
+  "placeholder-opacity-75::-webkit-input-placeholder": {
+    "--placeholder-opacity": "0.75"
+  },
+  "placeholder-opacity-75::-moz-placeholder": {
+    "--placeholder-opacity": "0.75"
+  },
+  "placeholder-opacity-75:-ms-input-placeholder": {
+    "--placeholder-opacity": "0.75"
+  },
+  "placeholder-opacity-75::-ms-input-placeholder": {
+    "--placeholder-opacity": "0.75"
+  },
+  "placeholder-opacity-75::placeholder": {
+    "--placeholder-opacity": "0.75"
+  },
+  "placeholder-opacity-100::-webkit-input-placeholder": {
+    "--placeholder-opacity": "1"
+  },
+  "placeholder-opacity-100::-moz-placeholder": {
+    "--placeholder-opacity": "1"
+  },
+  "placeholder-opacity-100:-ms-input-placeholder": {
+    "--placeholder-opacity": "1"
+  },
+  "placeholder-opacity-100::-ms-input-placeholder": {
+    "--placeholder-opacity": "1"
+  },
+  "placeholder-opacity-100::placeholder": {
+    "--placeholder-opacity": "1"
   },
   "pointer-events-none": {
     "pointer-events": "none"
