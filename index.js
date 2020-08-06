@@ -98,6 +98,40 @@ function normalizeTouplesByColor(touples) {
     });
 }
 
+const borderDirectionStyleSet = new Set([
+    'border-top-style',
+    'border-right-style',
+    'border-bottom-style',
+    'border-left-style',
+]);
+
+function normalizeBorderDirectionProperties(touples) {
+    return touples.map(([prop, value]) => {
+        if (borderDirectionStyleSet.has(prop)) {
+            return ['border-style', value];
+        }
+
+        return [prop, value];
+    });
+}
+
+const borderDirectionColorSet = new Set([
+    'border-top-color',
+    'border-right-color',
+    'border-bottom-color',
+    'border-left-color',
+]);
+
+function normalizeBorderColorProperties(touples) {
+    return touples.map(([prop, value]) => {
+        if (borderDirectionColorSet.has(prop)) {
+            return ['border-color', value];
+        }
+
+        return [prop, value];
+    });
+}
+
 const colorPropsSet = new Set(Array.from(allProperties).filter((prop) => prop.includes('color')));
 
 // TODO get this form tailwind config
@@ -236,8 +270,12 @@ function normalizeShorthands(touples) {
 }
 
 function normalizeCssMap(touples) {
-    return normalizeTouplesByColor(
-        normalizeTouplesForBorder(normalizeTouplesForBorderRadius(normalizeTouplesBySize(touples))),
+    return normalizeBorderColorProperties(
+        normalizeBorderDirectionProperties(
+            normalizeTouplesByColor(
+                normalizeTouplesForBorder(normalizeTouplesForBorderRadius(normalizeTouplesBySize(touples))),
+            ),
+        ),
     );
 }
 
@@ -317,24 +355,26 @@ async function cssToTailwind(tailwindCss, inputCss) {
 
 function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
     const cssMap = inputNormalized[cssClass];
-    return Object.fromEntries(
-        Object.entries(tailwindNormalized)
-            .filter(([twClass, value], index) => {
-                return isSubset(cssMap, value);
-            })
-            // remove redundants
-            .filter(([twClass, value], index, arr) => {
-                for (let i = 0; i < arr.length; i++) {
-                    if (i === index) {
-                        continue;
-                    }
-                    if (isSubset(arr[i][1], value, true)) {
-                        return false;
-                    }
+
+    const filtered = Object.entries(tailwindNormalized)
+        .filter(([twClass, value], index) => {
+            return isSubset(cssMap, value);
+        })
+        // remove redundants
+        .filter(([twClass, value], index, arr) => {
+            for (let i = 0; i < arr.length; i++) {
+                if (i === index) {
+                    continue;
                 }
-                return true;
-            }),
-    );
+                if (isSubset(arr[i][1], value, true)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+    debugger;
+    return Object.fromEntries(filtered);
 }
 
 (async () => {
