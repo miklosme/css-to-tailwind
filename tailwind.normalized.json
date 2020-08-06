@@ -1121,61 +1121,61 @@
     "height": "100vh"
   },
   "text-xs": {
-    "font-size": "0.75rem"
+    "font-size": "12px"
   },
   "text-sm": {
-    "font-size": "0.875rem"
+    "font-size": "14px"
   },
   "text-base": {
-    "font-size": "1rem"
+    "font-size": "16px"
   },
   "text-lg": {
-    "font-size": "1.125rem"
+    "font-size": "18px"
   },
   "text-xl": {
-    "font-size": "1.25rem"
+    "font-size": "20px"
   },
   "text-2xl": {
-    "font-size": "1.5rem"
+    "font-size": "24px"
   },
   "text-3xl": {
-    "font-size": "1.875rem"
+    "font-size": "30px"
   },
   "text-4xl": {
-    "font-size": "2.25rem"
+    "font-size": "36px"
   },
   "text-5xl": {
-    "font-size": "3rem"
+    "font-size": "48px"
   },
   "text-6xl": {
-    "font-size": "4rem"
+    "font-size": "64px"
   },
   "text-2xs": {
-    "font-size": "0.625rem"
+    "font-size": "10px"
   },
   "leading-3": {
-    "line-height": ".75rem"
+    "line-height": "12px"
   },
   "leading-4": {
-    "line-height": "1rem"
+    "line-height": "16px"
   },
   "leading-5": {
-    "line-height": "1.25rem"
+    "line-height": "20px"
   },
   "leading-6": {
-    "line-height": "1.5rem"
+    "line-height": "24px"
   },
   "leading-7": {
-    "line-height": "1.75rem"
+    "line-height": "28px"
   },
   "leading-8": {
-    "line-height": "2rem"
+    "line-height": "32px"
   },
   "leading-9": {
-    "line-height": "2.25rem"
+    "line-height": "36px"
   },
   "leading-10": {
-    "line-height": "2.5rem"
+    "line-height": "40px"
   },
   "leading-none": {
     "line-height": "1"
@@ -3271,22 +3271,22 @@
   "antialiased": {},
   "subpixel-antialiased": {},
   "tracking-tighter": {
-    "letter-spacing": "-0.05em"
+    "letter-spacing": "-0.8px"
   },
   "tracking-tight": {
-    "letter-spacing": "-0.025em"
+    "letter-spacing": "-0.4px"
   },
   "tracking-normal": {
-    "letter-spacing": "0"
+    "letter-spacing": "0px"
   },
   "tracking-wide": {
-    "letter-spacing": "0.025em"
+    "letter-spacing": "0.4px"
   },
   "tracking-wider": {
-    "letter-spacing": "0.05em"
+    "letter-spacing": "0.8px"
   },
   "tracking-widest": {
-    "letter-spacing": "0.1em"
+    "letter-spacing": "1.6px"
   },
   "select-none": {
     "user-select": "none"

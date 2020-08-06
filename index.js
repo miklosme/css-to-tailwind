@@ -67,6 +67,27 @@ const createTouplesConverter = ({ props, convertProp = (x) => x, convertValue = 
 // //////
 // //////
 
+const normalizeFontSize = createTouplesConverter({
+    props: ['font-size'],
+    convertValue: createRounder({
+        breakpoints: [10, 12, 14, 16, 18, 20, 24, 30, 36, 48, 64],
+    }),
+});
+
+const normalizeLineHeight = createTouplesConverter({
+    props: ['line-height'],
+    convertValue: createRounder({
+        breakpoints: [12, 16, 20, 24, 28, 32, 36, 40],
+    }),
+});
+
+const normalizeLetterSpacing = createTouplesConverter({
+    props: ['letter-spacing'],
+    convertValue: createRounder({
+        breakpoints: [-0.8, -0.4, 0, 0.4, 0.8, 1.6],
+    }),
+});
+
 const normalizeTouplesForBorderRadius = createTouplesConverter({
     props: ['border-radius'],
     convertValue: createRounder({
@@ -149,7 +170,6 @@ const normalizeBorderWidth = createTouplesConverter({
 
 async function classesRawJson(css) {
     const classNames = await extractSingleClassNames(css);
-    // return slow_NormalizeClasses(css, classNames.slice(0, 10));
     return slow_NormalizeClasses(css, classNames);
 }
 
@@ -242,16 +262,25 @@ function normalizeShorthands(touples) {
 }
 
 function normalizeCssMap(touples) {
+    // normalizeLineHeight
+    // normalizeLetterSpacing
+    // normalizeFontSize
     // normalizeTouplesForBorderRadius
     // normalizeTouplesByColor
     // normalizeBorderColorProperties
     // normalizeBorderStyleProperties
     // normalizeCommonSize
     // normalizeBorderWidth
-    return normalizeTouplesForBorderRadius(
-        normalizeTouplesByColor(
-            normalizeBorderColorProperties(
-                normalizeBorderStyleProperties(normalizeCommonSize(normalizeBorderWidth(touples))),
+    return normalizeLineHeight(
+        normalizeLetterSpacing(
+            normalizeFontSize(
+                normalizeTouplesForBorderRadius(
+                    normalizeTouplesByColor(
+                        normalizeBorderColorProperties(
+                            normalizeBorderStyleProperties(normalizeCommonSize(normalizeBorderWidth(touples))),
+                        ),
+                    ),
+                ),
             ),
         ),
     );
@@ -483,9 +512,7 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 
         - CONFIG font size to convert rem to px
         - result sort order should be the order as in tailwind.css
-        - .guest-layout__content-inner junk:
-            'm-0': { margin: '0' },
-            'm-px': { margin: '1px' },
-            'm-2px': { margin: '2px' },
+        - test user-select
+        - lineHeight: simple number value
     */
 })();
