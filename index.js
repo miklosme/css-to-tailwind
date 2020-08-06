@@ -188,16 +188,12 @@ async function parseSingleClasses(css) {
     const ast = await parse(css);
     const result = {};
     ast.walkRules((rule) => {
-        const topLevel =
-            rule.parent.type === 'root' ||
-            (rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)');
-
-        // if (topLevel) console.log(rule.selector)
-
+        const topLevel = rule.parent.type === 'root';
+        const mediaMinWidth1280 = rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)';
         const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
+        const isBlacklisted = /placeholder|focus|focus|hover/.test(rule.selector);
 
-        if (topLevel && isSingleClass) {
-            // if (rule.parent.type === 'root' && /^\.\s+$/.test(rule.selector)) {
+        if ((topLevel || mediaMinWidth1280) && isSingleClass && !isBlacklisted) {
             const selector = rule.selector.slice(1);
             rule.walkDecls((decl) => {
                 if (!result[selector]) {
@@ -266,7 +262,7 @@ async function cssToTailwind(tailwindCss, inputCss) {
 
     const tailwindNormalizedCssValues = normalizeDictOfTouples(tailwindNormalizedShorthands, normalizeCssMap);
     const inputNormalizedCssValues = normalizeDictOfTouples(inputNormalizedShorthands, normalizeCssMap);
-    
+
     const tailwindNormalized = normalizeDictOfTouples(tailwindNormalizedCssValues, Object.fromEntries);
     const inputNormalized = normalizeDictOfTouples(inputNormalizedCssValues, Object.fromEntries);
 
@@ -280,12 +276,16 @@ async function cssToTailwind(tailwindCss, inputCss) {
         const tailwind = resultArray.join(' ');
 
         const resultMap = Object.keys(
-            Object.fromEntries(resultSheet.reduce((acc, [twClass, map]) => [...acc, ...map], [])),
+            Object.entries(filteredTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
         );
 
         const missing = Object.entries(inputNormalized[cssClass])
             .filter(([prop]) => !resultMap.includes(prop))
-            .reduce((str, [prop, value]) => `${str}\t${prop}: ${Object.fromEntries(inputNormalizedShorthands[cssClass])[prop]}\n`, '');
+            .reduce(
+                (str, [prop, value]) =>
+                    `${str}\t${prop}: ${Object.fromEntries(inputNormalizedShorthands[cssClass])[prop]}\n`,
+                '',
+            );
 
         let error = null;
         let emoji = '✅';
@@ -339,9 +339,6 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 
 (async () => {
     const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
-
-    // const tailwindRaw = await extractSingleClasses(css);
-    // // const tailwindRaw = JSON.parse(await fs.readFile('./tailwind.raw.json', 'utf8'));
 
     const inputCss = `.alert {
         position: relative;
