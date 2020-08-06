@@ -101,7 +101,7 @@ function normalizeTouplesByColor(touples) {
 const colorPropsSet = new Set(Array.from(allProperties).filter((prop) => prop.includes('color')));
 
 // TODO get this form tailwind config
-const sizes = [0, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256];
+const sizes = [0, 1, 2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256];
 
 function roundCommonSize(num) {
     // do nothing if not in range
@@ -159,9 +159,6 @@ function isSubset(parent, child, strict) {
     const a = omitIf(parent, isVariable);
     const b = omitIf(child, isVariable);
     if (Object.keys(a).length === 0 || Object.keys(b).length === 0) {
-        return false;
-    }
-    if (isEqual(a, b)) {
         return false;
     }
     return isMatchWith(a, b, (va, vb, key, aaa, bbb) => {
@@ -343,7 +340,8 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 (async () => {
     const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
 
-    const inputCss = `.alert {
+    const inputCss = `
+      .alert {
         position: relative;
         padding: 1.6rem 4.6rem;
         margin-bottom: 1.6rem;
@@ -451,7 +449,6 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
         const { cssClass, tailwind, missing, resultSheet, emoji, error } = result;
 
         console.log(emoji, chalk.bold(`.${cssClass}`), tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '');
-        console.log(resultSheet);
         if (error) {
             console.log('ℹ️ ', error);
         }

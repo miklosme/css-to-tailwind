@@ -1,8 +1,8 @@
 {
   "sr-only": {
     "position": "absolute",
-    "width": "0px",
-    "height": "0px",
+    "width": "1px",
+    "height": "1px",
     "padding-top": "0px",
     "padding-right": "0px",
     "padding-bottom": "0px",
@@ -1289,10 +1289,10 @@
     "height": "auto"
   },
   "h-px": {
-    "height": "0px"
+    "height": "1px"
   },
   "h-2px": {
-    "height": "0px"
+    "height": "2px"
   },
   "h-full": {
     "height": "100%"
@@ -1505,16 +1505,16 @@
     "margin-left": "auto"
   },
   "m-px": {
-    "margin-top": "0px",
-    "margin-right": "0px",
-    "margin-bottom": "0px",
-    "margin-left": "0px"
+    "margin-top": "1px",
+    "margin-right": "1px",
+    "margin-bottom": "1px",
+    "margin-left": "1px"
   },
   "m-2px": {
-    "margin-top": "0px",
-    "margin-right": "0px",
-    "margin-bottom": "0px",
-    "margin-left": "0px"
+    "margin-top": "2px",
+    "margin-right": "2px",
+    "margin-bottom": "2px",
+    "margin-left": "2px"
   },
   "-m-1": {
     "margin-top": "-4px",
@@ -1783,20 +1783,20 @@
     "margin-right": "auto"
   },
   "my-px": {
-    "margin-top": "0px",
-    "margin-bottom": "0px"
+    "margin-top": "1px",
+    "margin-bottom": "1px"
   },
   "mx-px": {
-    "margin-left": "0px",
-    "margin-right": "0px"
+    "margin-left": "1px",
+    "margin-right": "1px"
   },
   "my-2px": {
-    "margin-top": "0px",
-    "margin-bottom": "0px"
+    "margin-top": "2px",
+    "margin-bottom": "2px"
   },
   "mx-2px": {
-    "margin-left": "0px",
-    "margin-right": "0px"
+    "margin-left": "2px",
+    "margin-right": "2px"
   },
   "-my-1": {
     "margin-top": "-4px",
@@ -2179,28 +2179,28 @@
     "margin-left": "auto"
   },
   "mt-px": {
-    "margin-top": "0px"
+    "margin-top": "1px"
   },
   "mr-px": {
-    "margin-right": "0px"
+    "margin-right": "1px"
   },
   "mb-px": {
-    "margin-bottom": "0px"
+    "margin-bottom": "1px"
   },
   "ml-px": {
-    "margin-left": "0px"
+    "margin-left": "1px"
   },
   "mt-2px": {
-    "margin-top": "0px"
+    "margin-top": "2px"
   },
   "mr-2px": {
-    "margin-right": "0px"
+    "margin-right": "2px"
   },
   "mb-2px": {
-    "margin-bottom": "0px"
+    "margin-bottom": "2px"
   },
   "ml-2px": {
-    "margin-left": "0px"
+    "margin-left": "2px"
   },
   "-mt-1": {
     "margin-top": "-4px"
@@ -2706,16 +2706,16 @@
     "padding-left": "256px"
   },
   "p-px": {
-    "padding-top": "0px",
-    "padding-right": "0px",
-    "padding-bottom": "0px",
-    "padding-left": "0px"
+    "padding-top": "1px",
+    "padding-right": "1px",
+    "padding-bottom": "1px",
+    "padding-left": "1px"
   },
   "p-2px": {
-    "padding-top": "0px",
-    "padding-right": "0px",
-    "padding-bottom": "0px",
-    "padding-left": "0px"
+    "padding-top": "2px",
+    "padding-right": "2px",
+    "padding-bottom": "2px",
+    "padding-left": "2px"
   },
   "py-0": {
     "padding-top": "0px",
@@ -2862,20 +2862,20 @@
     "padding-right": "256px"
   },
   "py-px": {
-    "padding-top": "0px",
-    "padding-bottom": "0px"
+    "padding-top": "1px",
+    "padding-bottom": "1px"
   },
   "px-px": {
-    "padding-left": "0px",
-    "padding-right": "0px"
+    "padding-left": "1px",
+    "padding-right": "1px"
   },
   "py-2px": {
-    "padding-top": "0px",
-    "padding-bottom": "0px"
+    "padding-top": "2px",
+    "padding-bottom": "2px"
   },
   "px-2px": {
-    "padding-left": "0px",
-    "padding-right": "0px"
+    "padding-left": "2px",
+    "padding-right": "2px"
   },
   "pt-0": {
     "padding-top": "0px"
@@ -3094,28 +3094,28 @@
     "padding-left": "256px"
   },
   "pt-px": {
-    "padding-top": "0px"
+    "padding-top": "1px"
   },
   "pr-px": {
-    "padding-right": "0px"
+    "padding-right": "1px"
   },
   "pb-px": {
-    "padding-bottom": "0px"
+    "padding-bottom": "1px"
   },
   "pl-px": {
-    "padding-left": "0px"
+    "padding-left": "1px"
   },
   "pt-2px": {
-    "padding-top": "0px"
+    "padding-top": "2px"
   },
   "pr-2px": {
-    "padding-right": "0px"
+    "padding-right": "2px"
   },
   "pb-2px": {
-    "padding-bottom": "0px"
+    "padding-bottom": "2px"
   },
   "pl-2px": {
-    "padding-left": "0px"
+    "padding-left": "2px"
   },
   "pointer-events-none": {
     "pointer-events": "none"
@@ -3592,10 +3592,10 @@
     "width": "auto"
   },
   "w-px": {
-    "width": "0px"
+    "width": "1px"
   },
   "w-2px": {
-    "width": "0px"
+    "width": "2px"
   },
   "w-1\\/2": {
     "width": "50%"
