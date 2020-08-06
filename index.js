@@ -327,7 +327,7 @@ async function cssToTailwind(tailwindCss, inputCss) {
             .filter(([prop]) => !resultMap.includes(prop))
             .reduce(
                 (str, [prop, value]) =>
-                    `${str}\t${prop}: ${Object.fromEntries(inputNormalizedShorthands[cssClass])[prop]}\n`,
+                    `${str}\n\t${prop}: ${Object.fromEntries(inputNormalizedShorthands[cssClass])[prop]}`,
                 '',
             );
 
@@ -339,9 +339,8 @@ async function cssToTailwind(tailwindCss, inputCss) {
         }
 
         if (resultArray.length === 0) {
-            emoji = '❌';
+            emoji = '⚠️ ';
             if (missing.length) {
-                emoji = '⚠️ ';
                 error = 'Could not match any Tailwind classes.';
             } else {
                 error = 'This class only contained unsupported CSS.';
@@ -495,8 +494,8 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
         const { cssClass, tailwind, missing, resultSheet, emoji, error } = result;
 
         console.log(emoji, chalk.bold(`.${cssClass}`), tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '');
-        if (error) {
-            console.log('ℹ️ ', error, missing.length ? `Missing CSS:\n${chalk.green(missing)}` : '');
+        if (error || missing.length) {
+            console.log(error || '', missing.length ? `\tMissing CSS:\n${chalk.green(missing)}` : '');
         }
         console.log();
     });
