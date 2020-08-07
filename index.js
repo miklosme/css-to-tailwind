@@ -5,7 +5,7 @@ const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
 const isEqual = require('lodash.isequal');
 const flow = require('lodash.flow');
-const parseSize = require('to-px');
+const parseUnit = require('parse-unit');
 const parseColor = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
 const postcss = require('postcss');
@@ -21,11 +21,31 @@ const fullConfig = resolveConfig(tailwindConfig);
 const CONFIG = {
     COLOR_DELTA: 5,
     FULL_ROUND: 9999,
+    REM: 16,
+    EM: 16,
 };
+
+function parseSize(val) {
+    if (val === '0') {
+        return 0;
+    }
+
+    const [value, unit] = parseUnit(val);
+
+    if (unit === 'px') {
+        return value;
+    } else if (unit === 'rem') {
+        return value * CONFIG.REM;
+    } else if (unit === 'em') {
+        return value * CONFIG.EM;
+    }
+
+    return val;
+}
 
 function getBreakPoints(data) {
     return Object.entries(data)
-        .map(([size, val]) => (val === '0' ? 0 : parseSize(val)))
+        .map(([size, val]) => parseSize(val))
         .filter((num) => typeof num === 'number')
         .sort((a, b) => a - b);
 }
@@ -54,8 +74,7 @@ const createRounder = ({ breakpoints, bailFn } = {}) => {
             }
         }
 
-        // patch the npm package, bc it returns null for '0'
-        const px = num === '0' ? 0 : parseSize(num);
+        const px = parseSize(num);
 
         if (typeof px === 'number') {
             return `${rounder(px)}px`;
@@ -525,7 +544,6 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 
     TODO
 
-        - CONFIG font size to convert rem to px
         - test user-select
         - lineHeight: simple number value
     */
