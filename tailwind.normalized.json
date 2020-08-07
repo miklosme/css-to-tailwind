@@ -915,7 +915,8 @@
   },
   "flex-1": {
     "flex-grow": "1",
-    "flex-shrink": "1"
+    "flex-shrink": "1",
+    "flex-basis": "0%"
   },
   "flex-auto": {
     "flex-grow": "1",
@@ -2417,6 +2418,15 @@
   },
   "scrolling-touch": {},
   "scrolling-auto": {},
+  "overscroll-auto": {},
+  "overscroll-contain": {},
+  "overscroll-none": {},
+  "overscroll-y-auto": {},
+  "overscroll-y-contain": {},
+  "overscroll-y-none": {},
+  "overscroll-x-auto": {},
+  "overscroll-x-contain": {},
+  "overscroll-x-none": {},
   "p-0": {
     "padding-top": "0px",
     "padding-right": "0px",
@@ -4374,7 +4384,7 @@
     "transition-property": "all"
   },
   "transition": {
-    "transition-property": "background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, -webkit-transform"
+    "transition-property": "background-color, border-color, color, fill, stroke, opacity, box-shadow, transform"
   },
   "transition-colors": {
     "transition-property": "background-color, border-color, color, fill, stroke"
@@ -4386,7 +4396,7 @@
     "transition-property": "box-shadow"
   },
   "transition-transform": {
-    "transition-property": "transform, -webkit-transform"
+    "transition-property": "transform"
   },
   "ease-linear": {
     "transition-timing-function": "linear"
@@ -4447,5 +4457,20 @@
   },
   "delay-1000": {
     "transition-delay": "1000ms"
+  },
+  "animate-none": {
+    "animation": "none"
+  },
+  "animate-spin": {
+    "animation": "spin 1s linear infinite"
+  },
+  "animate-ping": {
+    "animation": "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite"
+  },
+  "animate-pulse": {
+    "animation": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+  },
+  "animate-bounce": {
+    "animation": "bounce 1s infinite"
   }
 }

@@ -7,7 +7,15 @@ const isEqual = require('lodash.isequal');
 const parseSize = require('to-px');
 const parseColor = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
+const postcss = require('postcss');
 const chalk = require('chalk');
+
+const resolveConfig = require('tailwindcss/resolveConfig');
+const tailwindConfig = require(process.cwd() + '/tailwind.config.js');
+// const fullConfig = resolveConfig(tailwindConfig);
+
+// console.log(fullConfig)
+// process.exit()
 
 const CONFIG = {
     COLOR_DELTA: 5,
@@ -168,11 +176,6 @@ const normalizeBorderWidth = createTouplesConverter({
 // ///////
 // ///////
 
-async function classesRawJson(css) {
-    const classNames = await extractSingleClassNames(css);
-    return slow_NormalizeClasses(css, classNames);
-}
-
 function omitIf(obj, ...fns) {
     return Object.fromEntries(Object.entries(obj).filter((touple) => !fns.some((fn) => fn(touple))));
 }
@@ -214,7 +217,7 @@ async function parseSingleClasses(css) {
         const topLevel = rule.parent.type === 'root';
         const mediaMinWidth1280 = rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)';
         const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
-        const isUnsupportedSelector = /placeholder|focus|focus|hover|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
+        const isUnsupportedSelector = /container|placeholder|focus|focus|hover|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
             rule.selector,
         );
 
@@ -389,7 +392,15 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
 }
 
 (async () => {
-    const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
+    const { css: tailwindCss } = await postcss([
+        require('tailwindcss'),
+        require('autoprefixer'),
+    ]).process('@tailwind base; @tailwind components; @tailwind utilities;', { from: 'tailwind.css' });
+
+    await fs.writeFile('./tailwind.css', tailwindCss, 'utf8');
+
+    // const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
+
 
     const inputCss = `
       .alert {

@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "autoprefixer": "^9.8.6",
     "chalk": "^4.1.0",
     "css-color-converter": "^1.1.1",
     "cssstyle": "^2.3.0",
@@ -11,8 +12,10 @@
     "lodash.isequal": "^4.5.0",
     "lodash.ismatchwith": "^4.4.0",
     "patch-package": "^6.2.2",
+    "postcss": "^7.0.32",
     "postcss-safe-parser": "^4.0.2",
     "postinstall-postinstall": "^2.1.0",
+    "tailwindcss": "^1.6.2",
     "to-px": "^1.1.0"
   },
   "prettier": {
