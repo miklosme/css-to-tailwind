@@ -315,7 +315,13 @@ async function cssToTailwind(tailwindCss, inputCss) {
     return Object.keys(inputSingleClassesJson).map((cssClass) => {
         const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, cssClass);
 
-        const resultArray = Object.keys(filteredTailwind).sort();
+        const tailwindClassesOrder = Object.fromEntries(
+            Object.entries(Object.keys(tailwindNormalized)).map(([k, v]) => [v, k]),
+        );
+
+        const resultArray = Object.keys(filteredTailwind).sort(
+            (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
+        );
         const resultSheet = Object.entries(tailwindSingleClassesJson).filter(([cn]) => resultArray.includes(cn));
         const tailwind = resultArray.join(' ');
 
@@ -507,7 +513,6 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
     TODO
 
         - CONFIG font size to convert rem to px
-        - result sort order should be the order as in tailwind.css
         - test user-select
         - lineHeight: simple number value
     */
