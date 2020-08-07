@@ -12,7 +12,7 @@ const chalk = require('chalk');
 
 const resolveConfig = require('tailwindcss/resolveConfig');
 const tailwindConfig = require(process.cwd() + '/tailwind.config.js');
-// const fullConfig = resolveConfig(tailwindConfig);
+const fullConfig = resolveConfig(tailwindConfig);
 
 // console.log(fullConfig)
 // process.exit()
@@ -21,6 +21,13 @@ const CONFIG = {
     COLOR_DELTA: 5,
     FULL_ROUND: 9999,
 };
+
+function getBreakPoints(data) {
+    return Object.entries(data)
+        .map(([size, val]) => (val === '0' ? 0 : parseSize(val)))
+        .filter((num) => typeof num === 'number')
+        .sort((a, b) => a - b);
+}
 
 const colorProps = Array.from(allProperties).filter((prop) => prop.includes('color'));
 const colorPropsSet = new Set(colorProps);
@@ -78,28 +85,28 @@ const createTouplesConverter = ({ props, convertProp = (x) => x, convertValue = 
 const normalizeFontSize = createTouplesConverter({
     props: ['font-size'],
     convertValue: createRounder({
-        breakpoints: [10, 12, 14, 16, 18, 20, 24, 30, 36, 48, 64],
+        breakpoints: getBreakPoints(fullConfig.theme.fontSize),
     }),
 });
 
 const normalizeLineHeight = createTouplesConverter({
     props: ['line-height'],
     convertValue: createRounder({
-        breakpoints: [12, 16, 20, 24, 28, 32, 36, 40],
+        breakpoints: getBreakPoints(fullConfig.theme.lineHeight),
     }),
 });
 
 const normalizeLetterSpacing = createTouplesConverter({
     props: ['letter-spacing'],
     convertValue: createRounder({
-        breakpoints: [-0.8, -0.4, 0, 0.4, 0.8, 1.6],
+        breakpoints: getBreakPoints(fullConfig.theme.letterSpacing),
     }),
 });
 
 const normalizeTouplesForBorderRadius = createTouplesConverter({
     props: ['border-radius'],
     convertValue: createRounder({
-        breakpoints: [0, 2, 4, 6, 8],
+        breakpoints: getBreakPoints(fullConfig.theme.borderRadius).filter(num => num < 100),
         bailFn: (num) => {
             // this must be a full round value
             if (num > 100) {
@@ -154,14 +161,14 @@ const normalizeCommonSize = createTouplesConverter({
         'margin-left',
     ],
     convertValue: createRounder({
-        breakpoints: [0, 1, 2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192, 224, 256],
+        breakpoints: getBreakPoints(fullConfig.theme.width),
     }),
 });
 
 const normalizeBorderWidth = createTouplesConverter({
     props: ['border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
     convertValue: createRounder({
-        breakpoints: [0, 1, 2, 4, 8],
+        breakpoints: getBreakPoints(fullConfig.theme.borderWidth),
     }),
 });
 
@@ -400,7 +407,6 @@ function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
     await fs.writeFile('./tailwind.css', tailwindCss, 'utf8');
 
     // const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
-
 
     const inputCss = `
       .alert {
