@@ -2261,34 +2261,34 @@
     "max-width": "none"
   },
   "max-w-xs": {
-    "max-width": "320px"
+    "max-width": "20rem"
   },
   "max-w-sm": {
-    "max-width": "384px"
+    "max-width": "24rem"
   },
   "max-w-md": {
-    "max-width": "448px"
+    "max-width": "28rem"
   },
   "max-w-lg": {
-    "max-width": "512px"
+    "max-width": "32rem"
   },
   "max-w-xl": {
-    "max-width": "576px"
+    "max-width": "36rem"
   },
   "max-w-2xl": {
-    "max-width": "672px"
+    "max-width": "42rem"
   },
   "max-w-3xl": {
-    "max-width": "768px"
+    "max-width": "48rem"
   },
   "max-w-4xl": {
-    "max-width": "896px"
+    "max-width": "56rem"
   },
   "max-w-5xl": {
-    "max-width": "1024px"
+    "max-width": "64rem"
   },
   "max-w-6xl": {
-    "max-width": "1152px"
+    "max-width": "72rem"
   },
   "max-w-full": {
     "max-width": "100%"
@@ -2306,7 +2306,7 @@
     "max-width": "1280px"
   },
   "min-h-0": {
-    "min-height": "0px"
+    "min-height": "0"
   },
   "min-h-full": {
     "min-height": "100%"
@@ -2315,7 +2315,7 @@
     "min-height": "100vh"
   },
   "min-w-0": {
-    "min-width": "0px"
+    "min-width": "0"
   },
   "min-w-full": {
     "min-width": "100%"
@@ -3473,58 +3473,58 @@
     "z-index": "auto"
   },
   "gap-0": {
-    "gap": "0"
+    "gap": "0px"
   },
   "gap-1": {
-    "gap": "0.25rem"
+    "gap": "4px"
   },
   "gap-2": {
-    "gap": "0.5rem"
+    "gap": "8px"
   },
   "gap-3": {
-    "gap": "0.75rem"
+    "gap": "12px"
   },
   "gap-4": {
-    "gap": "1rem"
+    "gap": "16px"
   },
   "gap-5": {
-    "gap": "1.25rem"
+    "gap": "20px"
   },
   "gap-6": {
-    "gap": "1.5rem"
+    "gap": "24px"
   },
   "gap-8": {
-    "gap": "2rem"
+    "gap": "32px"
   },
   "gap-10": {
-    "gap": "2.5rem"
+    "gap": "40px"
   },
   "gap-12": {
-    "gap": "3rem"
+    "gap": "48px"
   },
   "gap-16": {
-    "gap": "4rem"
+    "gap": "64px"
   },
   "gap-20": {
-    "gap": "5rem"
+    "gap": "80px"
   },
   "gap-24": {
-    "gap": "6rem"
+    "gap": "96px"
   },
   "gap-32": {
-    "gap": "8rem"
+    "gap": "128px"
   },
   "gap-40": {
-    "gap": "10rem"
+    "gap": "160px"
   },
   "gap-48": {
-    "gap": "12rem"
+    "gap": "192px"
   },
   "gap-56": {
-    "gap": "14rem"
+    "gap": "224px"
   },
   "gap-64": {
-    "gap": "16rem"
+    "gap": "256px"
   },
   "gap-px": {
     "gap": "1px"

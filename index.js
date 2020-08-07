@@ -4,6 +4,7 @@ const { CSSStyleDeclaration } = require('cssstyle');
 const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
 const isEqual = require('lodash.isequal');
+const flow = require('lodash.flow');
 const parseSize = require('to-px');
 const parseColor = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
@@ -106,7 +107,7 @@ const normalizeLetterSpacing = createTouplesConverter({
 const normalizeTouplesForBorderRadius = createTouplesConverter({
     props: ['border-radius'],
     convertValue: createRounder({
-        breakpoints: getBreakPoints(fullConfig.theme.borderRadius).filter(num => num < 100),
+        breakpoints: getBreakPoints(fullConfig.theme.borderRadius).filter((num) => num < 100),
         bailFn: (num) => {
             // this must be a full round value
             if (num > 100) {
@@ -138,30 +139,34 @@ const normalizeBorderStyleProperties = createTouplesConverter({
     convertProp: () => 'border-style',
 });
 
-const normalizeCommonSize = createTouplesConverter({
-    props: [
-        'width',
-        'max-width',
-        'min-width',
-
-        'height',
-        'max-height',
-        'min-height',
-
-        'padding',
-        'padding-top',
-        'padding-right',
-        'padding-bottom',
-        'padding-left',
-
-        'margin',
-        'margin-top',
-        'margin-right',
-        'margin-bottom',
-        'margin-left',
-    ],
+const normalizeWidth = createTouplesConverter({
+    props: ['width'],
     convertValue: createRounder({
         breakpoints: getBreakPoints(fullConfig.theme.width),
+    }),
+});
+const normalizeHeight = createTouplesConverter({
+    props: ['height'],
+    convertValue: createRounder({
+        breakpoints: getBreakPoints(fullConfig.theme.height),
+    }),
+});
+const normalizeMargin = createTouplesConverter({
+    props: ['margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
+    convertValue: createRounder({
+        breakpoints: getBreakPoints(fullConfig.theme.margin),
+    }),
+});
+const normalizePadding = createTouplesConverter({
+    props: ['padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
+    convertValue: createRounder({
+        breakpoints: getBreakPoints(fullConfig.theme.padding),
+    }),
+});
+const normalizeGap = createTouplesConverter({
+    props: ['gap'],
+    convertValue: createRounder({
+        breakpoints: getBreakPoints(fullConfig.theme.gap),
     }),
 });
 
@@ -271,30 +276,21 @@ function normalizeShorthands(touples) {
     return Object.entries(declaration.getNonShorthandValues());
 }
 
-function normalizeCssMap(touples) {
-    // normalizeLineHeight
-    // normalizeLetterSpacing
-    // normalizeFontSize
-    // normalizeTouplesForBorderRadius
-    // normalizeTouplesByColor
-    // normalizeBorderColorProperties
-    // normalizeBorderStyleProperties
-    // normalizeCommonSize
-    // normalizeBorderWidth
-    return normalizeLineHeight(
-        normalizeLetterSpacing(
-            normalizeFontSize(
-                normalizeTouplesForBorderRadius(
-                    normalizeTouplesByColor(
-                        normalizeBorderColorProperties(
-                            normalizeBorderStyleProperties(normalizeCommonSize(normalizeBorderWidth(touples))),
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    );
-}
+const normalizeCssMap = flow([
+    normalizeLineHeight,
+    normalizeLetterSpacing,
+    normalizeFontSize,
+    normalizeTouplesForBorderRadius,
+    normalizeTouplesByColor,
+    normalizeBorderColorProperties,
+    normalizeBorderStyleProperties,
+    normalizeWidth,
+    normalizeHeight,
+    normalizeMargin,
+    normalizePadding,
+    normalizeGap,
+    normalizeBorderWidth,
+]);
 
 function normalizeDictOfTouples(dict, fn) {
     return Object.fromEntries(
