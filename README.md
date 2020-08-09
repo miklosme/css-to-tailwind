@@ -1,3 +1,5 @@
-# CSS To Tailwind Codemod
+# CSS To Tailwind
 
-Work in progress. Codemod for [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) migration.
+Work in progress.
+
+Package to convert CSS to [TailwindCSS](https://github.com/tailwindlabs/tailwindcss) classes.

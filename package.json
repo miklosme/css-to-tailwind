@@ -1,5 +1,5 @@
 {
-  "name": "css-to-tailwind-codemod",
+  "name": "css-to-tailwind",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -12,6 +12,7 @@
     "lodash.flow": "^3.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.ismatchwith": "^4.4.0",
+    "lodash.merge": "^4.6.2",
     "parse-unit": "^1.0.1",
     "patch-package": "^6.2.2",
     "postcss": "^7.0.32",
