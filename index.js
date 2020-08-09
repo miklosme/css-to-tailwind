@@ -1,5 +1,6 @@
 const chalk = require('chalk');
-const cssToTailwind = require('./css-to-tailwind');
+const path = require('path');
+const { createCssToTailwind } = require('./css-to-tailwind');
 
 (async () => {
     const inputCss = `
@@ -100,6 +101,10 @@ const cssToTailwind = require('./css-to-tailwind');
       }
       
       `;
+
+    const cssToTailwind = createCssToTailwind({
+        TAILWIND_CONFIG: path.resolve(process.cwd(), 'tailwind.config.js'),
+    });
 
     const results = await cssToTailwind(inputCss);
 

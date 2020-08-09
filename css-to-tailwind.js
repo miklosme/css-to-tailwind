@@ -1,5 +1,4 @@
 const parse = require('postcss-safe-parser');
-const fs = require('fs').promises;
 const { CSSStyleDeclaration } = require('cssstyle');
 const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
@@ -9,7 +8,6 @@ const parseUnit = require('parse-unit');
 const cssColorConverter = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
 const postcss = require('postcss');
-const path = require('path');
 
 function createCssToTailwind(options) {
     const CONFIG = merge(
@@ -18,12 +16,13 @@ function createCssToTailwind(options) {
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
+            TAILWIND_CONFIG: './defaults/tailwind.config.js',
         },
         options,
     );
 
     const resolveConfig = require('tailwindcss/resolveConfig');
-    const tailwindConfig = require(path.resolve(process.cwd(), 'tailwind.config.js'));
+    const tailwindConfig = require(CONFIG.TAILWIND_CONFIG);
     const fullConfig = resolveConfig(tailwindConfig);
 
     function parseColor(color) {
@@ -349,10 +348,6 @@ function createCssToTailwind(options) {
             require('autoprefixer'),
         ]).process('@tailwind base; @tailwind components; @tailwind utilities;', { from: 'tailwind.css' });
 
-        await fs.writeFile('./tailwind.css', tailwindCss, 'utf8');
-
-        // const tailwindCss = await fs.readFile('./tailwind.css', 'utf8');
-
         const tailwindSingleClassesJson = await parseSingleClasses(tailwindCss);
         const inputSingleClassesJson = await parseSingleClasses(inputCss);
 
@@ -370,8 +365,6 @@ function createCssToTailwind(options) {
 
         const tailwindNormalized = normalizeDictOfTouples(tailwindNormalizedCssValues, Object.fromEntries);
         const inputNormalized = normalizeDictOfTouples(inputNormalizedCssValues, Object.fromEntries);
-
-        await fs.writeFile('./tailwind.normalized.json', JSON.stringify(tailwindNormalized, null, 2), 'utf8');
 
         return Object.keys(inputSingleClassesJson).map((cssClass) => {
             const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, cssClass);
@@ -427,6 +420,6 @@ function createCssToTailwind(options) {
     };
 }
 
-module.exports.createCssToTailwind = createCssToTailwind;
 module.exports.cssToTailwind = createCssToTailwind();
 module.exports = module.exports.cssToTailwind;
+module.exports.createCssToTailwind = createCssToTailwind;
