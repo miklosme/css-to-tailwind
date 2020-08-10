@@ -28,7 +28,8 @@
   },
   "scripts": {
     "postinstall": "patch-package",
-    "test": "node --max-old-space-size=4096 test.js"
+    "test": "node --max-old-space-size=4096 test.js",
+    "test2": "node --max-old-space-size=4096 test2.js"
   },
   "bin": {
     "css-to-tailwind": "cli.js"

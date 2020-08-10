@@ -7,29 +7,26 @@ const merge = require('lodash.merge');
 const parseUnit = require('parse-unit');
 const cssColorConverter = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
-// const postcss = require('postcss');
-// const resolveConfig = require('tailwindcss/resolveConfig');
-// const postCssTailwind = require('tailwindcss');
-// const postCssAutoprefixer = require('autoprefixer');
-const defaultTailwindConfig = require('./defaults/tailwind.config.js');
 const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
 const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
-function createCssToTailwind(options) {
+const defaultCache = {
+    tailwindResolvedJson: defaultTailwindResolvedJson,
+    tailwindNormalizedJson: defaultTailwindNormalizedJson,
+};
+
+async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
     const CONFIG = merge(
         {
             COLOR_DELTA: 5,
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
-            TAILWIND_CONFIG: defaultTailwindConfig,
-            PREPROCESSOR_INPUT: '@tailwind base; @tailwind components; @tailwind utilities;',
         },
         options,
     );
 
-    // const resolvedConfig = resolveConfig(CONFIG.TAILWIND_CONFIG);
-    const resolvedConfig = defaultTailwindResolvedJson;
+    const resolvedConfig = __cache__.tailwindResolvedJson;
 
     function parseColor(color) {
         const rgba = cssColorConverter(color).toRgbaArray();
@@ -248,29 +245,12 @@ function createCssToTailwind(options) {
         return prop.startsWith('--');
     }
 
-    function isSubset(parent, child, strict) {
-        const a = omitIf(parent, isVariable);
-        const b = omitIf(child, isVariable);
-        if (Object.keys(a).length === 0 || Object.keys(b).length === 0) {
-            return false;
-        }
-        return isMatchWith(a, b, (va, vb, key) => {
-            if (strict) {
-                return undefined;
-            }
-
-            if (colorPropsSet.has(key)) {
-                const x = parseColor(va);
-                const y = parseColor(vb);
-                if (x === null || y === null) {
-                    return va === vb;
-                }
-                const distance = euclideanDistance(x, y);
-                return distance < CONFIG.COLOR_DELTA;
-            }
-
-            return undefined;
-        });
+    function normalizeDictOfTouples(dict, fn) {
+        return Object.fromEntries(
+            Object.entries(dict).map(([twClass, touples]) => {
+                return [twClass, fn(touples)];
+            }),
+        );
     }
 
     async function parseSingleClasses(css) {
@@ -300,9 +280,7 @@ function createCssToTailwind(options) {
     }
 
     function resolveLocalVariables(touples) {
-        const variables = touples.filter((touple) => {
-            return touple[0].startsWith('--');
-        });
+        const variables = touples.filter(isVariable);
 
         return touples.map(([prop, value]) => {
             const resolvedValue = variables.reduce((str, [varN, varV]) => str.split(`var(${varN})`).join(varV), value);
@@ -320,16 +298,41 @@ function createCssToTailwind(options) {
         return Object.entries(declaration.getNonShorthandValues());
     }
 
-    function normalizeDictOfTouples(dict, fn) {
-        return Object.fromEntries(
-            Object.entries(dict).map(([twClass, touples]) => {
-                return [twClass, fn(touples)];
-            }),
-        );
+    async function parseCss(css) {
+        const singleClassesJson = await parseSingleClasses(css);
+        const resolvedLocalVariables = normalizeDictOfTouples(singleClassesJson, resolveLocalVariables);
+        const normalizedShorthands = normalizeDictOfTouples(resolvedLocalVariables, normalizeShorthands);
+        const normalizedCssValues = normalizeDictOfTouples(normalizedShorthands, normalizeCssMap);
+        return normalizeDictOfTouples(normalizedCssValues, Object.fromEntries);
     }
 
-    function filterTailwind(tailwindNormalized, inputNormalized, cssClass) {
-        const cssMap = inputNormalized[cssClass];
+    function isSubset(parent, child, strict) {
+        const a = omitIf(parent, isVariable);
+        const b = omitIf(child, isVariable);
+        if (Object.keys(a).length === 0 || Object.keys(b).length === 0) {
+            return false;
+        }
+        return isMatchWith(a, b, (va, vb, key) => {
+            if (strict) {
+                return undefined;
+            }
+
+            if (colorPropsSet.has(key)) {
+                const x = parseColor(va);
+                const y = parseColor(vb);
+                if (x === null || y === null) {
+                    return va === vb;
+                }
+                const distance = euclideanDistance(x, y);
+                return distance < CONFIG.COLOR_DELTA;
+            }
+
+            return undefined;
+        });
+    }
+
+    function filterTailwind(tailwindNormalized, inputNormalized, selector) {
+        const cssMap = inputNormalized[selector];
 
         const filtered = Object.entries(tailwindNormalized)
             .filter(([twClass, value]) => {
@@ -351,80 +354,42 @@ function createCssToTailwind(options) {
         return Object.fromEntries(filtered);
     }
 
-    return async function cssToTailwind(inputCss) {
-        // const { css: tailwindCss } = await postcss([
-        //     postCssTailwind,
-        //     postCssAutoprefixer,
-        // ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+    const inputNormalized = await parseCss(inputCss);
 
-        // const tailwindSingleClassesJson = await parseSingleClasses(tailwindCss);
-        // const tailwindResolvedLocalVariables = normalizeDictOfTouples(tailwindSingleClassesJson, resolveLocalVariables);
-        // const tailwindNormalizedShorthands = normalizeDictOfTouples(
-        //     tailwindResolvedLocalVariables,
-        //     normalizeShorthands,
-        // );
-        // const tailwindNormalizedCssValues = normalizeDictOfTouples(tailwindNormalizedShorthands, normalizeCssMap);
-        // const tailwindNormalized = normalizeDictOfTouples(tailwindNormalizedCssValues, Object.fromEntries);
-        const tailwindNormalized = defaultTailwindNormalizedJson;
-        
-        const inputSingleClassesJson = await parseSingleClasses(inputCss);
-        const inputResolvedLocalVariables = normalizeDictOfTouples(inputSingleClassesJson, resolveLocalVariables);
-        const inputNormalizedShorthands = normalizeDictOfTouples(inputResolvedLocalVariables, normalizeShorthands);
-        const inputNormalizedCssValues = normalizeDictOfTouples(inputNormalizedShorthands, normalizeCssMap);
-        const inputNormalized = normalizeDictOfTouples(inputNormalizedCssValues, Object.fromEntries);
+    let tailwindNormalized = __cache__.tailwindNormalizedJson;
 
-        return Object.keys(inputSingleClassesJson).map((cssClass) => {
-            const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, cssClass);
+    if (!tailwindNormalized) {
+        __cache__.tailwindNormalizedJson = await parseCss(__cache__.tailwindCss);
+        tailwindNormalized = __cache__.tailwindNormalizedJson;
+    }
 
-            const tailwindClassesOrder = Object.fromEntries(
-                Object.entries(Object.keys(tailwindNormalized)).map(([k, v]) => [v, k]),
-            );
+    return Object.keys(inputNormalized).map((selector) => {
+        const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
 
-            const resultArray = Object.keys(filteredTailwind).sort(
-                (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
-            );
-            // const resultSheet = Object.entries(tailwindSingleClassesJson).filter(([cn]) => resultArray.includes(cn));
-            const tailwind = resultArray.join(' ');
+        const tailwindClassesOrder = Object.fromEntries(
+            Object.entries(Object.keys(tailwindNormalized)).map(([k, v]) => [v, k]),
+        );
 
-            const resultMap = Object.keys(
-                Object.entries(filteredTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
-            );
+        const resultArray = Object.keys(filteredTailwind).sort(
+            (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
+        );
+        const tailwind = resultArray.join(' ');
 
-            const missing = Object.entries(inputNormalized[cssClass])
-                .filter(([prop]) => !resultMap.includes(prop))
-                .reduce(
-                    (str, [prop, value]) =>
-                        `${str}\t${prop}: ${Object.fromEntries(inputNormalizedShorthands[cssClass])[prop]}\n`,
-                    '',
-                );
+        const resultMap = Object.keys(
+            Object.entries(filteredTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
+        );
 
-            let error = null;
-            let emoji = '✅';
+        const missing = Object.entries(inputNormalized[selector])
+            .filter(([prop]) => !resultMap.includes(prop))
+            .map(([prop, value]) => [prop, inputNormalized[selector][prop]]);
 
-            if (missing.length) {
-                emoji = '⚠️ ';
-            }
-
-            if (resultArray.length === 0) {
-                emoji = '⚠️ ';
-                if (missing.length) {
-                    error = 'Could not match any Tailwind classes.';
-                } else {
-                    error = 'This class only contained unsupported CSS.';
-                }
-            }
-
-            return {
-                cssClass,
-                tailwind,
-                resultArray,
-                // resultSheet: Object.fromEntries(resultSheet.map(([cn, touples]) => [cn, Object.fromEntries(touples)])),
-                missing,
-                emoji,
-            };
-        });
-    };
+        return {
+            selector,
+            tailwind,
+            missing,
+        };
+    });
 }
 
-module.exports.cssToTailwind = createCssToTailwind();
-module.exports.createCssToTailwind = createCssToTailwind;
+module.exports = cssToTailwind;
+module.exports.cssToTailwind = cssToTailwind;

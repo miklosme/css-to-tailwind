@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const path = require('path');
-const cssToTailwind = require('./css-to-tailwind');
+const withCustomConfig = require('./with-custom-config');
 
 (async () => {
     const inputCss = `
@@ -102,6 +102,10 @@ const cssToTailwind = require('./css-to-tailwind');
       
       `;
 
+    const cssToTailwind = await withCustomConfig({
+        TAILWIND_CONFIG: path.resolve(process.cwd(), 'customs/tailwind.config.js'),
+    })
+
     const results = await cssToTailwind(inputCss);
 
     const resultsWithMissing = results.filter((result) => result.missing.length);
@@ -122,12 +126,4 @@ const cssToTailwind = require('./css-to-tailwind');
     });
 
     console.log('Classes with missing:', resultsWithMissing.length);
-
-    /*
-
-    TODO
-
-        - test user-select
-        - lineHeight: simple number value
-    */
 })();
