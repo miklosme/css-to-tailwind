@@ -8,6 +8,12 @@ const parseUnit = require('parse-unit');
 const cssColorConverter = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
 const postcss = require('postcss');
+const resolveConfig = require('tailwindcss/resolveConfig');
+const postCssTailwind = require('tailwindcss');
+const postCssAutoprefixer = require('autoprefixer');
+const tailwindConfig = require('./defaults/tailwind.config.js');
+const tailwindResolvedJson = require('./defaults/tailwind.resolved.json');
+const tailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
 function createCssToTailwind(options) {
     const CONFIG = merge(
@@ -16,14 +22,13 @@ function createCssToTailwind(options) {
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
-            TAILWIND_CONFIG: './defaults/tailwind.config.js',
+            TAILWIND_CONFIG: tailwindConfig,
+            PREPROCESSOR_INPUT: '@tailwind base; @tailwind components; @tailwind utilities;',
         },
         options,
     );
 
-    const resolveConfig = require('tailwindcss/resolveConfig');
-    const tailwindConfig = require(CONFIG.TAILWIND_CONFIG);
-    const fullConfig = resolveConfig(tailwindConfig);
+    const resolvedConfig = resolveConfig(CONFIG.TAILWIND_CONFIG);
 
     function parseColor(color) {
         const rgba = cssColorConverter(color).toRgbaArray();
@@ -58,10 +63,7 @@ function createCssToTailwind(options) {
             .sort((a, b) => a - b);
     }
 
-    const colorProps = Array.from(allProperties).filter((prop) => prop.includes('color'));
-    const colorPropsSet = new Set(colorProps);
-
-    const createRounder = ({ breakpoints, bailFn } = {}) => {
+    const createRounder = ({ breakpoints, bailFn }) => {
         const rounder = (num) => {
             // do nothing if not in range
             if (num < breakpoints[0] || num > breakpoints[breakpoints.length - 1]) {
@@ -92,7 +94,7 @@ function createCssToTailwind(options) {
         };
     };
 
-    const createTouplesConverter = ({ props, convertProp = (x) => x, convertValue = (x) => x } = {}) => {
+    const createTouplesConverter = ({ props, convertProp = (x) => x, convertValue = (x) => x }) => {
         const propSet = new Set(props);
 
         return (touples) =>
@@ -113,28 +115,28 @@ function createCssToTailwind(options) {
     const normalizeFontSize = createTouplesConverter({
         props: ['font-size'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.fontSize),
+            breakpoints: getBreakPoints(resolvedConfig.theme.fontSize),
         }),
     });
 
     const normalizeLineHeight = createTouplesConverter({
         props: ['line-height'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.lineHeight),
+            breakpoints: getBreakPoints(resolvedConfig.theme.lineHeight),
         }),
     });
 
     const normalizeLetterSpacing = createTouplesConverter({
         props: ['letter-spacing'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.letterSpacing),
+            breakpoints: getBreakPoints(resolvedConfig.theme.letterSpacing),
         }),
     });
 
-    const normalizeTouplesForBorderRadius = createTouplesConverter({
+    const normalizeBorderRadius = createTouplesConverter({
         props: ['border-radius'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.borderRadius).filter((num) => num < 100),
+            breakpoints: getBreakPoints(resolvedConfig.theme.borderRadius).filter((num) => num < 100),
             bailFn: (num) => {
                 // this must be a full round value
                 if (num > 100) {
@@ -144,7 +146,10 @@ function createCssToTailwind(options) {
         }),
     });
 
-    const normalizeTouplesByColor = createTouplesConverter({
+    const colorProps = Array.from(allProperties).filter((prop) => prop.includes('color'));
+    const colorPropsSet = new Set(colorProps);
+
+    const normalizeColorValues = createTouplesConverter({
         props: colorProps,
         convertValue: (value) => {
             const rgba = parseColor(value);
@@ -169,38 +174,38 @@ function createCssToTailwind(options) {
     const normalizeWidth = createTouplesConverter({
         props: ['width'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.width),
+            breakpoints: getBreakPoints(resolvedConfig.theme.width),
         }),
     });
     const normalizeHeight = createTouplesConverter({
         props: ['height'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.height),
+            breakpoints: getBreakPoints(resolvedConfig.theme.height),
         }),
     });
     const normalizeMargin = createTouplesConverter({
         props: ['margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.margin),
+            breakpoints: getBreakPoints(resolvedConfig.theme.margin),
         }),
     });
     const normalizePadding = createTouplesConverter({
         props: ['padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.padding),
+            breakpoints: getBreakPoints(resolvedConfig.theme.padding),
         }),
     });
     const normalizeGap = createTouplesConverter({
         props: ['gap'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.gap),
+            breakpoints: getBreakPoints(resolvedConfig.theme.gap),
         }),
     });
 
     const normalizeBorderWidth = createTouplesConverter({
         props: ['border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(fullConfig.theme.borderWidth),
+            breakpoints: getBreakPoints(resolvedConfig.theme.borderWidth),
         }),
     });
 
@@ -208,16 +213,19 @@ function createCssToTailwind(options) {
         normalizeLineHeight,
         normalizeLetterSpacing,
         normalizeFontSize,
-        normalizeTouplesForBorderRadius,
-        normalizeTouplesByColor,
+
+        normalizeColorValues,
+
+        normalizeBorderRadius,
+        normalizeBorderWidth,
         normalizeBorderColorProperties,
         normalizeBorderStyleProperties,
+
         normalizeWidth,
         normalizeHeight,
         normalizeMargin,
         normalizePadding,
         normalizeGap,
-        normalizeBorderWidth,
     ]);
 
     // ///////
@@ -344,9 +352,9 @@ function createCssToTailwind(options) {
 
     return async function cssToTailwind(inputCss) {
         const { css: tailwindCss } = await postcss([
-            require('tailwindcss'),
-            require('autoprefixer'),
-        ]).process('@tailwind base; @tailwind components; @tailwind utilities;', { from: 'tailwind.css' });
+            postCssTailwind,
+            postCssAutoprefixer,
+        ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
 
         const tailwindSingleClassesJson = await parseSingleClasses(tailwindCss);
         const inputSingleClassesJson = await parseSingleClasses(inputCss);
@@ -421,5 +429,4 @@ function createCssToTailwind(options) {
 }
 
 module.exports.cssToTailwind = createCssToTailwind();
-module.exports = module.exports.cssToTailwind;
 module.exports.createCssToTailwind = createCssToTailwind;
