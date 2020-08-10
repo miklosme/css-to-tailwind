@@ -253,25 +253,16 @@ async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
         );
     }
 
-    async function parseSingleClasses(css) {
+    async function parseRules(css, filterFn) {
         const ast = await parse(css);
         const result = {};
         ast.walkRules((rule) => {
-            const topLevel = rule.parent.type === 'root';
-            const mediaMinWidth1280 =
-                rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)';
-            const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
-            const isUnsupportedSelector = /container|placeholder|focus|hover|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
-                rule.selector,
-            );
-
-            if ((topLevel || mediaMinWidth1280) && isSingleClass && !isUnsupportedSelector) {
-                const selector = rule.selector.slice(1);
+            if (!filterFn || filterFn(rule)) {
                 rule.walkDecls((decl) => {
-                    if (!result[selector]) {
-                        result[selector] = [];
+                    if (!result[rule.selector]) {
+                        result[rule.selector] = [];
                     }
-                    result[selector].push([decl.prop, decl.value]);
+                    result[rule.selector].push([decl.prop, decl.value]);
                 });
             }
         });
@@ -298,8 +289,8 @@ async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
         return Object.entries(declaration.getNonShorthandValues());
     }
 
-    async function parseCss(css) {
-        const singleClassesJson = await parseSingleClasses(css);
+    async function parseCss(css, filterFn) {
+        const singleClassesJson = await parseRules(css, filterFn);
         const resolvedLocalVariables = normalizeDictOfTouples(singleClassesJson, resolveLocalVariables);
         const normalizedShorthands = normalizeDictOfTouples(resolvedLocalVariables, normalizeShorthands);
         const normalizedCssValues = normalizeDictOfTouples(normalizedShorthands, normalizeCssMap);
@@ -331,6 +322,17 @@ async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
         });
     }
 
+    function isSupportedTailwindRule(rule) {
+        const topLevel = rule.parent.type === 'root';
+        const mediaMinWidth1280 = rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)';
+        const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
+        const isUnsupportedSelector = /container|placeholder|focus|hover|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
+            rule.selector,
+        );
+
+        return (topLevel || mediaMinWidth1280) && isSingleClass && !isUnsupportedSelector;
+    }
+
     function filterTailwind(tailwindNormalized, inputNormalized, selector) {
         const cssMap = inputNormalized[selector];
 
@@ -359,21 +361,25 @@ async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
     let tailwindNormalized = __cache__.tailwindNormalizedJson;
 
     if (!tailwindNormalized) {
-        __cache__.tailwindNormalizedJson = await parseCss(__cache__.tailwindCss);
-        tailwindNormalized = __cache__.tailwindNormalizedJson;
+        tailwindNormalized = await parseCss(__cache__.tailwindCss, isSupportedTailwindRule);
+        __cache__.tailwindNormalizedJson = tailwindNormalized;
     }
 
     return Object.keys(inputNormalized).map((selector) => {
         const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
 
         const tailwindClassesOrder = Object.fromEntries(
-            Object.entries(Object.keys(tailwindNormalized)).map(([k, v]) => [v, k]),
+            Object.keys(tailwindNormalized).map((twClass, index) => [twClass, index]),
         );
 
         const resultArray = Object.keys(filteredTailwind).sort(
             (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
         );
-        const tailwind = resultArray.join(' ');
+
+        const tailwind = resultArray
+            // remove the leading dot
+            .map((selector) => selector.slice(1))
+            .join(' ');
 
         const resultMap = Object.keys(
             Object.entries(filteredTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),

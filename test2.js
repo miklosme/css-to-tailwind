@@ -116,11 +116,11 @@ const withCustomConfig = require('./with-custom-config');
 
         console.log(
             isFull ? '✅' : '⚠️ ',
-            chalk.bold(`.${selector}`),
+            chalk.bold(selector),
             tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '',
         );
         if (missing.length) {
-            console.log(`\tMissing CSS:\n${chalk.green(JSON.stringify(missing, null, 2))}`);
+            console.log(`Missing CSS:\n${chalk.green(JSON.stringify(Object.fromEntries(missing), null, 2))}`);
         }
         console.log();
     });
