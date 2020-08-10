@@ -7,13 +7,13 @@ const merge = require('lodash.merge');
 const parseUnit = require('parse-unit');
 const cssColorConverter = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
-const postcss = require('postcss');
-const resolveConfig = require('tailwindcss/resolveConfig');
-const postCssTailwind = require('tailwindcss');
-const postCssAutoprefixer = require('autoprefixer');
-const tailwindConfig = require('./defaults/tailwind.config.js');
-const tailwindResolvedJson = require('./defaults/tailwind.resolved.json');
-const tailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
+// const postcss = require('postcss');
+// const resolveConfig = require('tailwindcss/resolveConfig');
+// const postCssTailwind = require('tailwindcss');
+// const postCssAutoprefixer = require('autoprefixer');
+const defaultTailwindConfig = require('./defaults/tailwind.config.js');
+const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
+const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
 function createCssToTailwind(options) {
     const CONFIG = merge(
@@ -22,13 +22,14 @@ function createCssToTailwind(options) {
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
-            TAILWIND_CONFIG: tailwindConfig,
+            TAILWIND_CONFIG: defaultTailwindConfig,
             PREPROCESSOR_INPUT: '@tailwind base; @tailwind components; @tailwind utilities;',
         },
         options,
     );
 
-    const resolvedConfig = resolveConfig(CONFIG.TAILWIND_CONFIG);
+    // const resolvedConfig = resolveConfig(CONFIG.TAILWIND_CONFIG);
+    const resolvedConfig = defaultTailwindResolvedJson;
 
     function parseColor(color) {
         const rgba = cssColorConverter(color).toRgbaArray();
@@ -351,27 +352,25 @@ function createCssToTailwind(options) {
     }
 
     return async function cssToTailwind(inputCss) {
-        const { css: tailwindCss } = await postcss([
-            postCssTailwind,
-            postCssAutoprefixer,
-        ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+        // const { css: tailwindCss } = await postcss([
+        //     postCssTailwind,
+        //     postCssAutoprefixer,
+        // ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
 
-        const tailwindSingleClassesJson = await parseSingleClasses(tailwindCss);
+        // const tailwindSingleClassesJson = await parseSingleClasses(tailwindCss);
+        // const tailwindResolvedLocalVariables = normalizeDictOfTouples(tailwindSingleClassesJson, resolveLocalVariables);
+        // const tailwindNormalizedShorthands = normalizeDictOfTouples(
+        //     tailwindResolvedLocalVariables,
+        //     normalizeShorthands,
+        // );
+        // const tailwindNormalizedCssValues = normalizeDictOfTouples(tailwindNormalizedShorthands, normalizeCssMap);
+        // const tailwindNormalized = normalizeDictOfTouples(tailwindNormalizedCssValues, Object.fromEntries);
+        const tailwindNormalized = defaultTailwindNormalizedJson;
+        
         const inputSingleClassesJson = await parseSingleClasses(inputCss);
-
-        const tailwindResolvedLocalVariables = normalizeDictOfTouples(tailwindSingleClassesJson, resolveLocalVariables);
         const inputResolvedLocalVariables = normalizeDictOfTouples(inputSingleClassesJson, resolveLocalVariables);
-
-        const tailwindNormalizedShorthands = normalizeDictOfTouples(
-            tailwindResolvedLocalVariables,
-            normalizeShorthands,
-        );
         const inputNormalizedShorthands = normalizeDictOfTouples(inputResolvedLocalVariables, normalizeShorthands);
-
-        const tailwindNormalizedCssValues = normalizeDictOfTouples(tailwindNormalizedShorthands, normalizeCssMap);
         const inputNormalizedCssValues = normalizeDictOfTouples(inputNormalizedShorthands, normalizeCssMap);
-
-        const tailwindNormalized = normalizeDictOfTouples(tailwindNormalizedCssValues, Object.fromEntries);
         const inputNormalized = normalizeDictOfTouples(inputNormalizedCssValues, Object.fromEntries);
 
         return Object.keys(inputSingleClassesJson).map((cssClass) => {
@@ -384,7 +383,7 @@ function createCssToTailwind(options) {
             const resultArray = Object.keys(filteredTailwind).sort(
                 (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
             );
-            const resultSheet = Object.entries(tailwindSingleClassesJson).filter(([cn]) => resultArray.includes(cn));
+            // const resultSheet = Object.entries(tailwindSingleClassesJson).filter(([cn]) => resultArray.includes(cn));
             const tailwind = resultArray.join(' ');
 
             const resultMap = Object.keys(
@@ -419,7 +418,7 @@ function createCssToTailwind(options) {
                 cssClass,
                 tailwind,
                 resultArray,
-                resultSheet: Object.fromEntries(resultSheet.map(([cn, touples]) => [cn, Object.fromEntries(touples)])),
+                // resultSheet: Object.fromEntries(resultSheet.map(([cn, touples]) => [cn, Object.fromEntries(touples)])),
                 missing,
                 emoji,
                 error,

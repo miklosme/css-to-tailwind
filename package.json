@@ -1,7 +1,7 @@
 {
   "name": "css-to-tailwind",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "css-to-tailwind.js",
   "license": "MIT",
   "dependencies": {
     "autoprefixer": "^9.8.6",
@@ -28,6 +28,6 @@
   },
   "scripts": {
     "postinstall": "patch-package",
-    "index": "node --max-old-space-size=4096 index.js"
+    "test": "node --max-old-space-size=4096 test.js"
   }
 }
