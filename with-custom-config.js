@@ -13,14 +13,10 @@ async function withCustomConfig(options) {
         options,
     );
 
-    if (typeof CONFIG.TAILWIND_CONFIG === 'string') {
-        CONFIG.TAILWIND_CONFIG = require(CONFIG.TAILWIND_CONFIG);
-    }
-
-    const tailwindResolvedJson = resolveConfig(CONFIG.TAILWIND_CONFIG);
+    const tailwindResolvedJson = resolveConfig(require(CONFIG.TAILWIND_CONFIG));
 
     const { css: tailwindCss } = await postcss([
-        postCssTailwind,
+        postCssTailwind(CONFIG.TAILWIND_CONFIG),
         postCssAutoprefixer,
     ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
 
