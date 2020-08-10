@@ -421,7 +421,6 @@ function createCssToTailwind(options) {
                 // resultSheet: Object.fromEntries(resultSheet.map(([cn, touples]) => [cn, Object.fromEntries(touples)])),
                 missing,
                 emoji,
-                error,
             };
         });
     };
