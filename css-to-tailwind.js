@@ -10,12 +10,7 @@ const euclideanDistance = require('euclidean-distance');
 const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
 const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
-const defaultCache = {
-    tailwindResolvedJson: defaultTailwindResolvedJson,
-    tailwindNormalizedJson: defaultTailwindNormalizedJson,
-};
-
-async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
+async function cssToTailwind(inputCss, options, cache) {
     const CONFIG = merge(
         {
             COLOR_DELTA: 5,
@@ -25,8 +20,15 @@ async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
         },
         options,
     );
+    const CACHE = merge(
+        {
+            tailwindResolvedJson: defaultTailwindResolvedJson,
+            tailwindNormalizedJson: defaultTailwindNormalizedJson,
+        },
+        cache,
+    );
 
-    const resolvedConfig = __cache__.tailwindResolvedJson;
+    const resolvedConfig = CACHE.tailwindResolvedJson;
 
     function parseColor(color) {
         const rgba = cssColorConverter(color).toRgbaArray();
@@ -358,11 +360,11 @@ async function cssToTailwind(inputCss, options, __cache__ = defaultCache) {
 
     const inputNormalized = await parseCss(inputCss);
 
-    let tailwindNormalized = __cache__.tailwindNormalizedJson;
+    let tailwindNormalized = CACHE.tailwindNormalizedJson;
 
     if (!tailwindNormalized) {
-        tailwindNormalized = await parseCss(__cache__.tailwindCss, isSupportedTailwindRule);
-        __cache__.tailwindNormalizedJson = tailwindNormalized;
+        tailwindNormalized = await parseCss(CACHE.tailwindCss, isSupportedTailwindRule);
+        CACHE.tailwindNormalizedJson = tailwindNormalized;
     }
 
     return Object.keys(inputNormalized).map((selector) => {

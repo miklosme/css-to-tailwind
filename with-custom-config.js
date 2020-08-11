@@ -22,6 +22,7 @@ async function withCustomConfig(options) {
 
     const cache = {
         tailwindResolvedJson,
+        tailwindNormalizedJson: null,
         tailwindCss,
     };
 
