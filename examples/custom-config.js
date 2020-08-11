@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const path = require('path');
-const withCustomConfig = require('./with-custom-config');
+const withCustomConfig = require('../with-custom-config');
 
 (async () => {
     const inputCss = `

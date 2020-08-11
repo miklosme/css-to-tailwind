@@ -400,4 +400,3 @@ async function cssToTailwind(inputCss, options, cache) {
 }
 
 module.exports = cssToTailwind;
-module.exports.cssToTailwind = cssToTailwind;

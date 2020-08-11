@@ -3,7 +3,7 @@ const resolveConfig = require('tailwindcss/resolveConfig');
 const merge = require('lodash.merge');
 const postCssTailwind = require('tailwindcss');
 const postCssAutoprefixer = require('autoprefixer');
-const { cssToTailwind } = require('./css-to-tailwind.js');
+const cssToTailwind = require('./css-to-tailwind.js');
 
 async function withCustomConfig(options) {
     const CONFIG = merge(
