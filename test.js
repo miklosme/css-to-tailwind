@@ -1,5 +1,6 @@
 const cssToTailwind = require('./css-to-tailwind');
 const withCustomConfig = require('./with-custom-config');
+const { getVariantFromSelector } = require('./utils');
 const path = require('path');
 
 const inputCss = `
@@ -354,4 +355,28 @@ test('withCustomConfig', async () => {
           },
         ]
     `);
+});
+
+test.each([
+    ['div', null, { baseSelector: 'div', variant: 'default' }],
+    ['div:hover', null, { baseSelector: 'div', variant: 'hover' }],
+    ['.foo:focus', null, { baseSelector: '.foo', variant: 'focus' }],
+    ['.bar::placeholder', null, { baseSelector: '.bar', variant: 'placeholder' }],
+    ['.baz:focus::placeholder', null, { baseSelector: '.baz', variant: 'placeholder' }],
+    ['.foo::-ms-input-placeholder', null, { baseSelector: '.foo', variant: 'placeholder' }],
+    ['.foo::-moz-placeholder', null, { baseSelector: '.foo', variant: 'placeholder' }],
+    [
+      'div p > .foo .bar:hover #id .baz:focus::placeholder',
+      null,
+      { baseSelector: 'div p > .foo .bar:hover #id .baz', variant: 'placeholder' },
+    ],
+    ['   p    div:hover    ', null, { baseSelector: 'div', variant: 'hover' }],
+    ['.foo', '(min-width: 640px)', { baseSelector: '.foo', variant: 'sm' }],
+    ['.foo', '(min-width: 768px)', { baseSelector: '.foo', variant: 'md' }],
+    ['.foo', '(min-width: 1024px)', { baseSelector: '.foo', variant: 'lg' }],
+    ['.foo', '(min-width: 1280px)', { baseSelector: '.foo', variant: 'xl' }],
+])("getVariantFromSelector('%s', '%s')", (selector, mediaRuleValue, expected) => {
+    const { baseSelector, variant } = getVariantFromSelector(selector, mediaRuleValue);
+    expect(baseSelector).toEqual(expected.baseSelector);
+    expect(variant).toEqual(expected.variant);
 });

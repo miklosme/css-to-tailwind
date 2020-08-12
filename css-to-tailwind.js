@@ -1,11 +1,11 @@
-const parse = require('postcss-safe-parser');
+const parseCss = require('postcss-safe-parser');
+const parseUnit = require('parse-unit');
 const { CSSStyleDeclaration } = require('./patched-lib/CSSStyleDeclaration.js');
+const { parseColor, createTouplesConverter, getVariantFromSelector } = require('./utils');
 const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
 const flow = require('lodash.flow');
 const merge = require('lodash.merge');
-const parseUnit = require('parse-unit');
-const cssColorConverter = require('css-color-converter');
 const euclideanDistance = require('euclidean-distance');
 const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
 const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
@@ -29,14 +29,6 @@ async function cssToTailwind(inputCss, options, cache) {
     );
 
     const resolvedConfig = CACHE.tailwindResolvedJson;
-
-    function parseColor(color) {
-        const rgba = cssColorConverter(color).toRgbaArray();
-        if (Array.isArray(rgba) && rgba.length === 4) {
-            return rgba;
-        }
-        return null;
-    }
 
     function parseSize(val) {
         if (val === '0') {
@@ -92,19 +84,6 @@ async function cssToTailwind(inputCss, options, cache) {
 
             return num;
         };
-    };
-
-    const createTouplesConverter = ({ props, convertProp = (x) => x, convertValue = (x) => x }) => {
-        const propSet = new Set(props);
-
-        return (touples) =>
-            touples.map(([prop, value]) => {
-                if (propSet.has(prop)) {
-                    return [convertProp(prop), convertValue(value)];
-                }
-
-                return [prop, value];
-            });
     };
 
     // //////
@@ -256,17 +235,22 @@ async function cssToTailwind(inputCss, options, cache) {
     }
 
     async function parseRules(css, filterFn) {
-        const ast = await parse(css);
+        const ast = await parseCss(css);
         const result = {};
         ast.walkRules((rule) => {
-            if (!filterFn || filterFn(rule)) {
-                rule.walkDecls((decl) => {
-                    if (!result[rule.selector]) {
-                        result[rule.selector] = [];
-                    }
-                    result[rule.selector].push([decl.prop, decl.value]);
-                });
+            // if (!filterFn || filterFn(rule)) {
+            const { variant, baseSelector } = getVariantFromSelector(rule.selector, rule.parent.params);
+            const ruleTuples = [];
+            rule.walkDecls((decl) => {
+                ruleTuples.push([decl.prop, decl.value]);
+            });
+
+            if (!result[variant]) {
+                result[variant] = {};
             }
+
+            result[variant][baseSelector] = ruleTuples;
+            // }
         });
 
         return result;
@@ -291,12 +275,17 @@ async function cssToTailwind(inputCss, options, cache) {
         return Object.entries(declaration.getNonShorthandValues());
     }
 
-    async function parseCss(css, filterFn) {
-        const singleClassesJson = await parseRules(css, filterFn);
-        const resolvedLocalVariables = normalizeDictOfTouples(singleClassesJson, resolveLocalVariables);
-        const normalizedShorthands = normalizeDictOfTouples(resolvedLocalVariables, normalizeShorthands);
-        const normalizedCssValues = normalizeDictOfTouples(normalizedShorthands, normalizeCssMap);
-        return normalizeDictOfTouples(normalizedCssValues, Object.fromEntries);
+    async function createNormalizedClasses(css, filterFn) {
+        const variants = await parseRules(css, filterFn);
+
+        return Object.fromEntries(
+            Object.entries(variants).map(([variant, classesJson]) => {
+                const resolvedLocalVariables = normalizeDictOfTouples(classesJson, resolveLocalVariables);
+                const normalizedShorthands = normalizeDictOfTouples(resolvedLocalVariables, normalizeShorthands);
+                const normalizedCssValues = normalizeDictOfTouples(normalizedShorthands, normalizeCssMap);
+                return [variant, normalizeDictOfTouples(normalizedCssValues, Object.fromEntries)];
+            }),
+        );
     }
 
     function isSubset(parent, child, strict) {
@@ -358,45 +347,59 @@ async function cssToTailwind(inputCss, options, cache) {
         return Object.fromEntries(filtered);
     }
 
-    const inputNormalized = await parseCss(inputCss);
+    function FOO(tailwindNormalized, inputNormalized) {
+        return Object.keys(inputNormalized).map((selector) => {
+            const resultTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
+
+            const tailwindClassesOrder = Object.fromEntries(
+                Object.keys(tailwindNormalized).map((twClass, index) => [twClass, index]),
+            );
+
+            const resultArray = Object.keys(resultTailwind).sort(
+                (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
+            );
+
+            const tailwind = resultArray
+                // remove the leading dot
+                .map((selector) => selector.slice(1))
+                .join(' ');
+
+            const resultMap = Object.keys(
+                Object.entries(resultTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
+            );
+
+            const missing = Object.entries(inputNormalized[selector])
+                .filter(([prop]) => !resultMap.includes(prop))
+                .map(([prop, value]) => [prop, inputNormalized[selector][prop]]);
+
+            return {
+                selector,
+                tailwind,
+                missing,
+            };
+        });
+    }
 
     let tailwindNormalized = CACHE.tailwindNormalizedJson;
 
     if (!tailwindNormalized) {
-        tailwindNormalized = await parseCss(CACHE.tailwindCss, isSupportedTailwindRule);
+        tailwindNormalized = await createNormalizedClasses(CACHE.tailwindCss, isSupportedTailwindRule);
         CACHE.tailwindNormalizedJson = tailwindNormalized;
     }
 
-    return Object.keys(inputNormalized).map((selector) => {
-        const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
+    const inputNormalized = await createNormalizedClasses(inputCss);
 
-        const tailwindClassesOrder = Object.fromEntries(
-            Object.keys(tailwindNormalized).map((twClass, index) => [twClass, index]),
-        );
+    const BAZ = Object.entries(inputNormalized).map(([variant, inputNormalized]) => {
+        const BAR = tailwindNormalized[variant];
 
-        const resultArray = Object.keys(filteredTailwind).sort(
-            (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
-        );
-
-        const tailwind = resultArray
-            // remove the leading dot
-            .map((selector) => selector.slice(1))
-            .join(' ');
-
-        const resultMap = Object.keys(
-            Object.entries(filteredTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
-        );
-
-        const missing = Object.entries(inputNormalized[selector])
-            .filter(([prop]) => !resultMap.includes(prop))
-            .map(([prop, value]) => [prop, inputNormalized[selector][prop]]);
-
-        return {
-            selector,
-            tailwind,
-            missing,
-        };
+        return [variant, FOO(BAR, inputNormalized)];
     });
+
+    console.log(BAZ.flatMap((b) => b[1].map((c) => c.tailwind)));
+
+    debugger;
+
+    return BAZ;
 }
 
 module.exports = cssToTailwind;
