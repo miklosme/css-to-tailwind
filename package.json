@@ -17,6 +17,7 @@
     "patch-package": "^6.2.2",
     "postcss": "^7.0.32",
     "postcss-safe-parser": "^4.0.2",
+    "postcss-selector-parser": "^6.0.2",
     "postinstall-postinstall": "^2.1.0",
     "tailwindcss": "^1.6.2"
   },

@@ -1,4 +1,5 @@
-const parse = require('postcss-safe-parser');
+const parseCss = require('postcss-safe-parser');
+const parseSelector = require('postcss-selector-parser');
 const { CSSStyleDeclaration } = require('cssstyle');
 const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
@@ -255,8 +256,37 @@ async function cssToTailwind(inputCss, options, cache) {
         );
     }
 
+    function parseSelectorAsVariants(selector) {
+        const all = [];
+        parseSelector((selectors) => {
+            console.log('outer', selector)
+            selectors.walk((selector) => {
+                console.log('inner', selector)
+                all.push({ type: selector.type, value: selector.value });
+            });
+        }).processSync(selector);
+
+        const result = { selector, singelSelector: null, pseudos: [] };
+        for (let i = all.length - 1; i >= 0; i--) {
+            console.log(i, all[i].type)
+            if (['class', 'id', 'tag'].includes(all[i].type)) {
+                result.singelSelector = all[i].value;
+                break;
+            } else if (all[i].type === 'pseudo') {
+                result.pseudos.push(all[i].value);
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
+    console.log(parseSelectorAsVariants('div p > .foo .bar:hover  #id .baz:focus::placeholder'))
+
+    debugger
+
     async function parseRules(css, filterFn) {
-        const ast = await parse(css);
+        const ast = await parseCss(css);
         const result = {};
         ast.walkRules((rule) => {
             if (!filterFn || filterFn(rule)) {
@@ -291,7 +321,7 @@ async function cssToTailwind(inputCss, options, cache) {
         return Object.entries(declaration.getNonShorthandValues());
     }
 
-    async function parseCss(css, filterFn) {
+    async function createNormalizedClasses(css, filterFn) {
         const singleClassesJson = await parseRules(css, filterFn);
         const resolvedLocalVariables = normalizeDictOfTouples(singleClassesJson, resolveLocalVariables);
         const normalizedShorthands = normalizeDictOfTouples(resolvedLocalVariables, normalizeShorthands);
@@ -358,23 +388,32 @@ async function cssToTailwind(inputCss, options, cache) {
         return Object.fromEntries(filtered);
     }
 
-    const inputNormalized = await parseCss(inputCss);
+    // function groupByClassName(acc, { selector, tailwindJson }) {}
+
+    const inputNormalized = await createNormalizedClasses(inputCss);
 
     let tailwindNormalized = CACHE.tailwindNormalizedJson;
 
     if (!tailwindNormalized) {
-        tailwindNormalized = await parseCss(CACHE.tailwindCss, isSupportedTailwindRule);
+        tailwindNormalized = await createNormalizedClasses(CACHE.tailwindCss, isSupportedTailwindRule);
         CACHE.tailwindNormalizedJson = tailwindNormalized;
     }
 
+    // const x = Object.keys(inputNormalized)
+    //     .map((selector) => {
+    //         const tailwindJson = filterTailwind(tailwindNormalized, inputNormalized, selector);
+    //         return { selector, tailwindJson };
+    //     })
+    //     .reduce(groupByClassName, {});
+
     return Object.keys(inputNormalized).map((selector) => {
-        const filteredTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
+        const resultTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
 
         const tailwindClassesOrder = Object.fromEntries(
             Object.keys(tailwindNormalized).map((twClass, index) => [twClass, index]),
         );
 
-        const resultArray = Object.keys(filteredTailwind).sort(
+        const resultArray = Object.keys(resultTailwind).sort(
             (a, b) => tailwindClassesOrder[a] - tailwindClassesOrder[b],
         );
 
@@ -384,7 +423,7 @@ async function cssToTailwind(inputCss, options, cache) {
             .join(' ');
 
         const resultMap = Object.keys(
-            Object.entries(filteredTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
+            Object.entries(resultTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
         );
 
         const missing = Object.entries(inputNormalized[selector])
