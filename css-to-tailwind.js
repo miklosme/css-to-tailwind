@@ -1,5 +1,5 @@
 const parse = require('postcss-safe-parser');
-const { CSSStyleDeclaration } = require('cssstyle');
+const { CSSStyleDeclaration } = require('./patched-lib/CSSStyleDeclaration.js');
 const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
 const flow = require('lodash.flow');

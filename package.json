@@ -29,13 +29,17 @@
   },
   "scripts": {
     "postinstall": "patch-package",
-    "test": "jest"
+    "test": "jest",
+    "fixlib": "rollup -c rollup.config.js && yarn test"
   },
   "bin": {
     "css-to-tailwind": "cli.js"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^14.0.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
     "jest": "^26.3.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "rollup": "^2.23.1"
   }
 }
