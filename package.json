@@ -1,7 +1,8 @@
 {
   "name": "css-to-tailwind",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "css-to-tailwind.js",
+  "author": "Miklos Megyes <m.miklos05+npm@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "autoprefixer": "^9.8.6",
