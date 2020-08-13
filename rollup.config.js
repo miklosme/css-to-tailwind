@@ -1,5 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 
 export default {
     input: 'node_modules/cssstyle/lib/CSSStyleDeclaration.js',
@@ -8,12 +9,11 @@ export default {
         format: 'cjs',
     },
     plugins: [
+        json(),
         resolve({
+            // do not include "cssom" in the bundle to prevent circular dependencies
             resolveOnly: [/^(?!cssom$)/]
         }),
-        commonjs({
-            // include: ['node_modules/cssom/lib/parse.js'],
-            // exclude: ['node_modules/cssom/lib/CSSStyleDeclaration.js'],
-        }),
+        commonjs(),
     ],
 };
