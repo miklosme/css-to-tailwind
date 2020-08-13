@@ -13,7 +13,7 @@ const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.js
 async function cssToTailwind(inputCss, options, cache) {
     const CONFIG = merge(
         {
-            COLOR_DELTA: 5,
+            COLOR_DELTA: 2,
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
