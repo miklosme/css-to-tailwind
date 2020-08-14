@@ -26,7 +26,7 @@ async function withCustomConfig(options) {
         tailwindCss,
     };
 
-    return (css) => cssToTailwind(css, CONFIG, cache);
+    return (css, options) => cssToTailwind(css, merge(CONFIG, options), cache);
 }
 
 module.exports = withCustomConfig;

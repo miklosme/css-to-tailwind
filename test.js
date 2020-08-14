@@ -243,6 +243,7 @@ test('cssToTailwind', async () => {
 test('withCustomConfig', async () => {
     const customCssToTailwind = await withCustomConfig({
         TAILWIND_CONFIG: path.resolve(process.cwd(), 'customs/tailwind.config.js'),
+        COLOR_DELTA: 5,
     });
 
     const results = await customCssToTailwind(inputCss);
