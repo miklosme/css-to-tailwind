@@ -239,17 +239,19 @@ async function cssToTailwind(inputCss, options, cache) {
         const result = {};
         ast.walkRules((rule) => {
             // if (!filterFn || filterFn(rule)) {
-            const { variant, baseSelector } = getVariantFromSelector(rule.selector, rule.parent.params);
+            const { variants, baseSelector } = getVariantFromSelector(rule.selector, rule.parent.params);
             const ruleTuples = [];
             rule.walkDecls((decl) => {
                 ruleTuples.push([decl.prop, decl.value]);
             });
 
-            if (!result[variant]) {
-                result[variant] = {};
+            const variantsKey = Array.from(variants).sort().join(',');
+
+            if (!result[variantsKey]) {
+                result[variantsKey] = {};
             }
 
-            result[variant][baseSelector] = ruleTuples;
+            result[variantsKey][baseSelector] = ruleTuples;
             // }
         });
 
@@ -314,14 +316,12 @@ async function cssToTailwind(inputCss, options, cache) {
     }
 
     function isSupportedTailwindRule(rule) {
-        const topLevel = rule.parent.type === 'root';
-        const mediaMinWidth1280 = rule.parent.type === 'atrule' && rule.parent.params === '@media (min-width: 1280px)';
-        const isSingleClass = !rule.selector.includes(' ') && rule.selector.startsWith('.');
-        const isUnsupportedSelector = /container|placeholder|focus|hover|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
+        const isUnsupportedSelector = /container|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
             rule.selector,
         );
+        const isClass = rule.selector.startsWith('.');
 
-        return (topLevel || mediaMinWidth1280) && isSingleClass && !isUnsupportedSelector;
+        return isClass && !isUnsupportedSelector;
     }
 
     function filterTailwind(tailwindNormalized, inputNormalized, selector) {
@@ -417,8 +417,6 @@ async function cssToTailwind(inputCss, options, cache) {
             };
         });
     });
-
-    console.log(QUX);
 
     debugger;
 

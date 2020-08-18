@@ -39,7 +39,7 @@ function getVariantFromSelector(selector, mediaRuleValue) {
         });
     }).processSync(selector);
 
-    let variant = null;
+    let variants = [];
 
     if (mediaRuleValue) {
         const matchResult = mediaRuleValue.match(/\(min-width:\s(\d+)px\)/);
@@ -51,28 +51,31 @@ function getVariantFromSelector(selector, mediaRuleValue) {
                 if (!responsiveBreakpoints[minWidth]) {
                     throw new Error('unsupported media query');
                 }
-                variant = responsiveBreakpoints[minWidth];
+                variants.push(responsiveBreakpoints[minWidth]);
             }
         }
     }
 
     const baseSelector = [];
+    let isProcessingPseudosOfFirstElement = true;
 
     for (let i = all.length - 1; i >= 0; i--) {
         let value = all[i].value;
 
-        if (variant === null && i === all.length - 1) {
+        if (isProcessingPseudosOfFirstElement) {
             if (all[i].type === 'pseudo') {
                 if (value.includes('hover')) {
-                    variant = 'hover';
+                    variants.push('hover');
                     continue;
                 } else if (value.includes('focus')) {
-                    variant = 'focus';
+                    variants.push('focus');
                     continue;
                 } else if (value.includes('placeholder')) {
-                    variant = 'placeholder';
+                    variants.push('placeholder');
                     continue;
                 }
+            } else {
+                isProcessingPseudosOfFirstElement = false;
             }
         }
 
@@ -85,7 +88,7 @@ function getVariantFromSelector(selector, mediaRuleValue) {
         baseSelector.push(value);
     }
     return {
-        variant: variant || 'default',
+        variants: variants.length ? variants : ['default'],
         baseSelector: baseSelector.reverse().join(''),
     };
 }
