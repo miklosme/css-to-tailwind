@@ -13,18 +13,32 @@ const withCustomConfig = require('../with-custom-config');
         border-radius: 0.2rem;
         width: 100%;
       } 
+
+      .bar {
+        position: relative;
+        padding: 1.6rem 4.6rem;
+      }
       
       .foo:hover {
-        background-color: transparent;
+        background: #cccccc;
       }
 
       .foo:focus {
-        background-color: transparent;
+        border-color: #e2f2f0;
       }
 
-      .foo::placeholder {
-        color: transparent;
+      @media (min-width: 1280px) {
+        .foo {
+          padding: 3rem 7rem;
+          margin-bottom: 2.4rem;
+        } 
       }
+
+      /*
+      .foo::placeholder {
+        color: #e6e6e6;
+      }
+      */
     `;
 
     const cssToTailwind = await withCustomConfig({

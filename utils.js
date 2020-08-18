@@ -61,7 +61,7 @@ function getVariantFromSelector(selector, mediaRuleValue) {
     for (let i = all.length - 1; i >= 0; i--) {
         let value = all[i].value;
 
-        if (i === all.length - 1) {
+        if (variant === null && i === all.length - 1) {
             if (all[i].type === 'pseudo') {
                 if (value.includes('hover')) {
                     variant = 'hover';

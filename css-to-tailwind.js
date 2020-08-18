@@ -347,7 +347,7 @@ async function cssToTailwind(inputCss, options, cache) {
         return Object.fromEntries(filtered);
     }
 
-    function FOO(tailwindNormalized, inputNormalized) {
+    function FOO(variant, tailwindNormalized, inputNormalized) {
         return Object.keys(inputNormalized).map((selector) => {
             const resultTailwind = filterTailwind(tailwindNormalized, inputNormalized, selector);
 
@@ -375,7 +375,11 @@ async function cssToTailwind(inputCss, options, cache) {
             return {
                 selector,
                 tailwind,
-                missing,
+                missing: missing.length
+                    ? {
+                          [variant]: missing,
+                      }
+                    : {},
             };
         });
     }
@@ -389,17 +393,36 @@ async function cssToTailwind(inputCss, options, cache) {
 
     const inputNormalized = await createNormalizedClasses(inputCss);
 
-    const BAZ = Object.entries(inputNormalized).map(([variant, inputNormalized]) => {
-        const BAR = tailwindNormalized[variant];
+    const BAZ = Object.entries(inputNormalized)
+        .map(([variant, inputNormalized]) => {
+            const BAR = tailwindNormalized[variant];
 
-        return [variant, FOO(BAR, inputNormalized)];
+            return [variant, FOO(variant, BAR, inputNormalized)];
+        })
+        .flatMap(([_, results]) => results)
+        .reduce((acc, curr) => {
+            if (!acc[curr.selector]) {
+                acc[curr.selector] = [];
+            }
+            acc[curr.selector].push(curr);
+            return acc;
+        }, {});
+
+    const QUX = Object.entries(BAZ).map(([baseSelector, results]) => {
+        return results.reduce((acc, curr) => {
+            return {
+                selector: curr.selector,
+                tailwind: acc.tailwind ? acc.tailwind.concat(' ', curr.tailwind) : curr.tailwind,
+                missing: acc.missing ? { ...acc.missing, ...curr.missing } : curr.missing,
+            };
+        });
     });
 
-    console.log(BAZ.flatMap((b) => b[1].map((c) => c.tailwind)));
+    console.log(QUX);
 
     debugger;
 
-    return BAZ;
+    return QUX;
 }
 
 module.exports = cssToTailwind;
