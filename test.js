@@ -250,7 +250,7 @@ test('withCustomConfig', async () => {
     const results = await customCssToTailwind(inputCss);
 
     expect(results).toHaveLength(15);
-    expect(results.filter((res) => res.missing.length)).toHaveLength(5);
+    expect(results.filter((res) => Object.keys(res.missing).length)).toHaveLength(5);
     expect(results).toMatchInlineSnapshot(`
         Array [
           Object {
