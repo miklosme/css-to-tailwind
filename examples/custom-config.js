@@ -4,6 +4,11 @@ const cssToTailwind = require('../css-to-tailwind');
 
 (async () => {
     const inputCss = `
+      .baz {
+        padding: 1.6rem 4.6rem;
+        background: url('logo.svg') no-repeat;
+      }
+
       .foo {
         position: relative;
         padding: 1.6rem 4.6rem;
@@ -34,7 +39,7 @@ const cssToTailwind = require('../css-to-tailwind');
         } 
       }
 
-      .foo::placeholder {
+      .bar::placeholder {
         color: #e6e6e6;
       }
     `;
@@ -44,19 +49,19 @@ const cssToTailwind = require('../css-to-tailwind');
         COLOR_DELTA: 5,
     });
 
-    const resultsWithMissing = results.filter((result) => result.missing.length);
+    const resultsWithMissing = results.filter((result) => Object.keys(result.missing).length);
 
     results.forEach((result) => {
         const { selector, tailwind, missing } = result;
-        const isFull = missing.length === 0;
+        const isFull = Object.keys(result.missing).length === 0;
 
         console.log(
             isFull ? '✅' : '⚠️ ',
             chalk.bold(selector),
             tailwind.length ? `--> "${chalk.italic(tailwind)}"` : '',
         );
-        if (missing.length) {
-            console.log(`Missing CSS:\n${chalk.green(JSON.stringify(Object.fromEntries(missing), null, 2))}`);
+        if (!isFull) {
+            console.log(`Missing CSS:\n${chalk.green(JSON.stringify(missing, null, 2))}`);
         }
         console.log();
     });

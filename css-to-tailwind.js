@@ -13,8 +13,8 @@ const euclideanDistance = require('euclidean-distance');
 const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
 const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
-async function cssToTailwind(inputCss, options) {
-    const CONFIG = merge(
+async function cssToTailwind(inputCss, _options) {
+    const options = merge(
         {
             COLOR_DELTA: 2,
             FULL_ROUND: 9999,
@@ -23,15 +23,17 @@ async function cssToTailwind(inputCss, options) {
             PREPROCESSOR_INPUT: '@tailwind base; @tailwind components; @tailwind utilities;',
             TAILWIND_CONFIG: null,
         },
-        options,
+        _options,
     );
 
-    const resolvedConfig = CONFIG.TAILWIND_CONFIG ? resolveConfig(CONFIG.TAILWIND_CONFIG) : defaultTailwindResolvedJson;
+    const resolvedConfig = options.TAILWIND_CONFIG
+        ? resolveConfig(options.TAILWIND_CONFIG)
+        : defaultTailwindResolvedJson;
 
     const { css: tailwindCss } = await postCss([
-        postCssTailwind(CONFIG.TAILWIND_CONFIG),
+        postCssTailwind(options.TAILWIND_CONFIG),
         postCssAutoprefixer,
-    ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+    ]).process(options.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
 
     // //////
     // //////
@@ -69,7 +71,7 @@ async function cssToTailwind(inputCss, options) {
             bailFn: (num) => {
                 // this must be a full round value
                 if (num > 100) {
-                    return CONFIG.FULL_ROUND;
+                    return options.FULL_ROUND;
                 }
             },
             options,
@@ -248,7 +250,7 @@ async function cssToTailwind(inputCss, options) {
                     return va === vb;
                 }
                 const distance = euclideanDistance(x, y);
-                return distance < CONFIG.COLOR_DELTA;
+                return distance < options.COLOR_DELTA;
             }
 
             return undefined;
@@ -313,7 +315,7 @@ async function cssToTailwind(inputCss, options) {
         });
     }
 
-    const tailwindNormalized = CONFIG.TAILWIND_CONFIG
+    const tailwindNormalized = options.TAILWIND_CONFIG
         ? await createNormalizedClasses(tailwindCss)
         : defaultTailwindNormalizedJson;
     const inputNormalized = await createNormalizedClasses(inputCss);

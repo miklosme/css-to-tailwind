@@ -240,11 +240,11 @@ test('cssToTailwind', async () => {
     `);
 });
 
-test.only('cssToTailwind with custom tailwind config', async () => {
+test('cssToTailwind with custom tailwind config', async () => {
     const results = await cssToTailwind(inputCss, {
-      TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'customs/tailwind.config.js')),
-      COLOR_DELTA: 5,
-  });
+        TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'customs/tailwind.config.js')),
+        COLOR_DELTA: 5,
+    });
 
     expect(results).toHaveLength(15);
     expect(results.filter((res) => Object.keys(res.missing).length)).toHaveLength(5);
