@@ -1,6 +1,6 @@
 const postcss = require('postcss');
-const resolveConfig = require('tailwindcss/resolveConfig');
 const merge = require('lodash.merge');
+const resolveConfig = require('tailwindcss/resolveConfig');
 const postCssTailwind = require('tailwindcss');
 const postCssAutoprefixer = require('autoprefixer');
 const cssToTailwind = require('./css-to-tailwind.js');

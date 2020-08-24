@@ -1,7 +1,10 @@
-const parseCss = require('postcss-safe-parser');
-const parseUnit = require('parse-unit');
 const { CSSStyleDeclaration } = require('./patched-lib/CSSStyleDeclaration.js');
-const { parseColor, createTouplesConverter, getVariantFromSelector } = require('./utils');
+const { createRounder, getBreakPoints, createTouplesConverter } = require('./lib/utils');
+const { parseColor, parseCss } = require('./lib/parsers');
+const resolveConfig = require('tailwindcss/resolveConfig');
+const postCss = require('postCss');
+const postCssTailwind = require('tailwindcss');
+const postCssAutoprefixer = require('autoprefixer');
 const allProperties = require('cssstyle/lib/allProperties');
 const isMatchWith = require('lodash.ismatchwith');
 const flow = require('lodash.flow');
@@ -10,81 +13,25 @@ const euclideanDistance = require('euclidean-distance');
 const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
 const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
-async function cssToTailwind(inputCss, options, cache) {
+async function cssToTailwind(inputCss, options) {
     const CONFIG = merge(
         {
             COLOR_DELTA: 2,
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
+            PREPROCESSOR_INPUT: '@tailwind base; @tailwind components; @tailwind utilities;',
+            TAILWIND_CONFIG: null,
         },
         options,
     );
-    const CACHE = merge(
-        {
-            tailwindResolvedJson: defaultTailwindResolvedJson,
-            tailwindNormalizedJson: defaultTailwindNormalizedJson,
-        },
-        cache,
-    );
 
-    const resolvedConfig = CACHE.tailwindResolvedJson;
+    const resolvedConfig = CONFIG.TAILWIND_CONFIG ? resolveConfig(CONFIG.TAILWIND_CONFIG) : defaultTailwindResolvedJson;
 
-    function parseSize(val) {
-        if (val === '0') {
-            return 0;
-        }
-
-        const [value, unit] = parseUnit(val);
-
-        if (unit === 'px') {
-            return value;
-        } else if (unit === 'rem') {
-            return value * CONFIG.REM;
-        } else if (unit === 'em') {
-            return value * CONFIG.EM;
-        }
-
-        return val;
-    }
-
-    function getBreakPoints(data) {
-        return Object.entries(data)
-            .map(([size, val]) => parseSize(val))
-            .filter((num) => typeof num === 'number')
-            .sort((a, b) => a - b);
-    }
-
-    const createRounder = ({ breakpoints, bailFn }) => {
-        const rounder = (num) => {
-            // do nothing if not in range
-            if (num < breakpoints[0] || num > breakpoints[breakpoints.length - 1]) {
-                return num;
-            }
-            const dist = breakpoints.map((size) => Math.abs(size - num));
-            const index = dist.indexOf(Math.min(...dist));
-            return breakpoints[index];
-        };
-
-        return (num) => {
-            // this is a way to opt out of round when the input number is way too big for example
-            if (bailFn) {
-                const bailValue = bailFn(num);
-
-                if (typeof bailValue !== 'undefined') {
-                    return `${rounder(px)}px`;
-                }
-            }
-
-            const px = parseSize(num);
-
-            if (typeof px === 'number') {
-                return `${rounder(px)}px`;
-            }
-
-            return num;
-        };
-    };
+    const { css: tailwindCss } = await postCss([
+        postCssTailwind(CONFIG.TAILWIND_CONFIG),
+        postCssAutoprefixer,
+    ]).process(CONFIG.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
 
     // //////
     // //////
@@ -94,34 +41,38 @@ async function cssToTailwind(inputCss, options, cache) {
     const normalizeFontSize = createTouplesConverter({
         props: ['font-size'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.fontSize),
+            breakpoints: getBreakPoints(resolvedConfig.theme.fontSize, options),
+            options,
         }),
     });
 
     const normalizeLineHeight = createTouplesConverter({
         props: ['line-height'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.lineHeight),
+            breakpoints: getBreakPoints(resolvedConfig.theme.lineHeight, options),
+            options,
         }),
     });
 
     const normalizeLetterSpacing = createTouplesConverter({
         props: ['letter-spacing'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.letterSpacing),
+            breakpoints: getBreakPoints(resolvedConfig.theme.letterSpacing, options),
+            options,
         }),
     });
 
     const normalizeBorderRadius = createTouplesConverter({
         props: ['border-radius'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.borderRadius).filter((num) => num < 100),
+            breakpoints: getBreakPoints(resolvedConfig.theme.borderRadius, options).filter((num) => num < 100),
             bailFn: (num) => {
                 // this must be a full round value
                 if (num > 100) {
                     return CONFIG.FULL_ROUND;
                 }
             },
+            options,
         }),
     });
 
@@ -153,38 +104,44 @@ async function cssToTailwind(inputCss, options, cache) {
     const normalizeWidth = createTouplesConverter({
         props: ['width'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.width),
+            breakpoints: getBreakPoints(resolvedConfig.theme.width, options),
+            options,
         }),
     });
     const normalizeHeight = createTouplesConverter({
         props: ['height'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.height),
+            breakpoints: getBreakPoints(resolvedConfig.theme.height, options),
+            options,
         }),
     });
     const normalizeMargin = createTouplesConverter({
         props: ['margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.margin),
+            breakpoints: getBreakPoints(resolvedConfig.theme.margin, options),
+            options,
         }),
     });
     const normalizePadding = createTouplesConverter({
         props: ['padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.padding),
+            breakpoints: getBreakPoints(resolvedConfig.theme.padding, options),
+            options,
         }),
     });
     const normalizeGap = createTouplesConverter({
         props: ['gap'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.gap),
+            breakpoints: getBreakPoints(resolvedConfig.theme.gap, options),
+            options,
         }),
     });
 
     const normalizeBorderWidth = createTouplesConverter({
         props: ['border-width', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'],
         convertValue: createRounder({
-            breakpoints: getBreakPoints(resolvedConfig.theme.borderWidth),
+            breakpoints: getBreakPoints(resolvedConfig.theme.borderWidth, options),
+            options,
         }),
     });
 
@@ -234,30 +191,6 @@ async function cssToTailwind(inputCss, options, cache) {
         );
     }
 
-    async function parseRules(css, filterFn) {
-        const ast = await parseCss(css);
-        const result = {};
-        ast.walkRules((rule) => {
-            // if (!filterFn || filterFn(rule)) {
-            const { variants, baseSelector } = getVariantFromSelector(rule.selector, rule.parent.params);
-            const ruleTuples = [];
-            rule.walkDecls((decl) => {
-                ruleTuples.push([decl.prop, decl.value]);
-            });
-
-            const variantsKey = Array.from(variants).sort().join(',');
-
-            if (!result[variantsKey]) {
-                result[variantsKey] = {};
-            }
-
-            result[variantsKey][baseSelector] = ruleTuples;
-            // }
-        });
-
-        return result;
-    }
-
     function resolveLocalVariables(touples) {
         const variables = touples.filter(isVariable);
 
@@ -277,8 +210,8 @@ async function cssToTailwind(inputCss, options, cache) {
         return Object.entries(declaration.getNonShorthandValues());
     }
 
-    async function createNormalizedClasses(css, filterFn) {
-        const variants = await parseRules(css, filterFn);
+    async function createNormalizedClasses(css) {
+        const variants = await parseCss(css);
 
         return Object.fromEntries(
             Object.entries(variants).map(([variant, classesJson]) => {
@@ -289,6 +222,13 @@ async function cssToTailwind(inputCss, options, cache) {
             }),
         );
     }
+
+    // ////////
+    // ////////
+    // ////////
+    // ////////
+    // ////////
+    // ////////
 
     function isSubset(parent, child, strict) {
         const a = omitIf(parent, isVariable);
@@ -313,15 +253,6 @@ async function cssToTailwind(inputCss, options, cache) {
 
             return undefined;
         });
-    }
-
-    function isSupportedTailwindRule(rule) {
-        const isUnsupportedSelector = /container|w-2\\\/|w-3\\\/|w-4\\\/|w-5\\\/|w-6\\\/|w-7\\\/|w-8\\\/|w-9\\\/|w-10\\\/|w-11\\\//.test(
-            rule.selector,
-        );
-        const isClass = rule.selector.startsWith('.');
-
-        return isClass && !isUnsupportedSelector;
     }
 
     function filterTailwind(tailwindNormalized, inputNormalized, selector) {
@@ -364,9 +295,7 @@ async function cssToTailwind(inputCss, options, cache) {
                 .map((selector) => selector.slice(1))
                 .join(' ');
 
-            const resultMap = Object.keys(
-                Object.entries(resultTailwind).reduce((acc, [twClass, map]) => ({ ...acc, ...map }), {}),
-            );
+            const resultMap = Object.keys(Object.values(resultTailwind).reduce((acc, map) => ({ ...acc, ...map }), {}));
 
             const missing = Object.entries(inputNormalized[selector])
                 .filter(([prop]) => !resultMap.includes(prop))
@@ -384,22 +313,17 @@ async function cssToTailwind(inputCss, options, cache) {
         });
     }
 
-    let tailwindNormalized = CACHE.tailwindNormalizedJson;
-
-    if (!tailwindNormalized) {
-        tailwindNormalized = await createNormalizedClasses(CACHE.tailwindCss, isSupportedTailwindRule);
-        CACHE.tailwindNormalizedJson = tailwindNormalized;
-    }
-
+    const tailwindNormalized = CONFIG.TAILWIND_CONFIG
+        ? await createNormalizedClasses(tailwindCss)
+        : defaultTailwindNormalizedJson;
     const inputNormalized = await createNormalizedClasses(inputCss);
 
     const BAZ = Object.entries(inputNormalized)
-        .map(([variant, inputNormalized]) => {
+        .flatMap(([variant, inputNormalized]) => {
             const BAR = tailwindNormalized[variant];
 
-            return [variant, FOO(variant, BAR, inputNormalized)];
+            return FOO(variant, BAR, inputNormalized);
         })
-        .flatMap(([_, results]) => results)
         .reduce((acc, curr) => {
             if (!acc[curr.selector]) {
                 acc[curr.selector] = [];

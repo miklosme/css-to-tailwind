@@ -1,6 +1,6 @@
 {
   "name": "css-to-tailwind",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "main": "css-to-tailwind.js",
   "author": "Miklos Megyes <m.miklos05+npm@gmail.com>",
   "license": "MIT",
@@ -37,6 +37,8 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "chalk": "^4.1.0",
     "cssstyle": "^2.3.0",
+    "eslint": "^7.7.0",
+    "eslint-plugin-jest": "^23.20.0",
     "jest": "^26.3.0",
     "patch-package": "^6.2.2",
     "prettier": "^2.0.5",

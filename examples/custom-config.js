@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const path = require('path');
-const withCustomConfig = require('../with-custom-config');
+const cssToTailwind = require('../css-to-tailwind');
 
 (async () => {
     const inputCss = `
@@ -28,24 +28,21 @@ const withCustomConfig = require('../with-custom-config');
       }
 
       @media (min-width: 1280px) {
-        .foo {
+        .bar {
           padding: 3rem 7rem;
           margin-bottom: 2.4rem;
         } 
       }
 
-      /*
       .foo::placeholder {
         color: #e6e6e6;
       }
-      */
     `;
 
-    const cssToTailwind = await withCustomConfig({
-        TAILWIND_CONFIG: path.resolve(process.cwd(), 'customs/tailwind.config.js'),
-    })
-
-    const results = await cssToTailwind(inputCss);
+    const results = await cssToTailwind(inputCss, {
+        TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'customs/tailwind.config.js')),
+        COLOR_DELTA: 5,
+    });
 
     const resultsWithMissing = results.filter((result) => result.missing.length);
 

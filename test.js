@@ -1,6 +1,5 @@
 const cssToTailwind = require('./css-to-tailwind');
-const withCustomConfig = require('./with-custom-config');
-const { getVariantFromSelector } = require('./utils');
+const { getVariantFromSelector } = require('./lib/parsers');
 const path = require('path');
 
 const inputCss = `
@@ -241,13 +240,11 @@ test('cssToTailwind', async () => {
     `);
 });
 
-test('withCustomConfig', async () => {
-    const customCssToTailwind = await withCustomConfig({
-        TAILWIND_CONFIG: path.resolve(process.cwd(), 'customs/tailwind.config.js'),
-        COLOR_DELTA: 5,
-    });
-
-    const results = await customCssToTailwind(inputCss);
+test.only('cssToTailwind with custom tailwind config', async () => {
+    const results = await cssToTailwind(inputCss, {
+      TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'customs/tailwind.config.js')),
+      COLOR_DELTA: 5,
+  });
 
     expect(results).toHaveLength(15);
     expect(results.filter((res) => Object.keys(res.missing).length)).toHaveLength(5);
