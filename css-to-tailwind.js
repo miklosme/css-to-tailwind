@@ -10,8 +10,6 @@ const isMatchWith = require('lodash.ismatchwith');
 const flow = require('lodash.flow');
 const merge = require('lodash.merge');
 const euclideanDistance = require('euclidean-distance');
-const defaultTailwindResolvedJson = require('./defaults/tailwind.resolved.json');
-const defaultTailwindNormalizedJson = require('./defaults/tailwind.normalized.json');
 
 async function cssToTailwind(inputCss, _options) {
     const options = merge(
@@ -26,12 +24,10 @@ async function cssToTailwind(inputCss, _options) {
         _options,
     );
 
-    const resolvedConfig = options.TAILWIND_CONFIG
-        ? resolveConfig(options.TAILWIND_CONFIG)
-        : defaultTailwindResolvedJson;
+    const resolvedConfig = resolveConfig(options.TAILWIND_CONFIG);
 
     const { css: tailwindCss } = await postCss([
-        postCssTailwind(options.TAILWIND_CONFIG),
+        postCssTailwind(options.TAILWIND_CONFIG || undefined),
         postCssAutoprefixer,
     ]).process(options.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
 
@@ -259,7 +255,6 @@ async function cssToTailwind(inputCss, _options) {
 
     function filterTailwind(tailwindNormalized, inputNormalized, selector) {
         const cssMap = inputNormalized[selector];
-
         const filtered = Object.entries(tailwindNormalized)
             .filter(([twClass, value]) => {
                 return isSubset(cssMap, value);
@@ -315,9 +310,7 @@ async function cssToTailwind(inputCss, _options) {
         });
     }
 
-    const tailwindNormalized = options.TAILWIND_CONFIG
-        ? await createNormalizedClasses(tailwindCss)
-        : defaultTailwindNormalizedJson;
+    const tailwindNormalized = await createNormalizedClasses(tailwindCss);
     const inputNormalized = await createNormalizedClasses(inputCss);
 
     const BAZ = Object.entries(inputNormalized)
