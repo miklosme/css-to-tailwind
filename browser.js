@@ -1,6 +1,3 @@
-const postCss = require('postCss');
-const postCssTailwind = require('tailwindcss');
-const postCssAutoprefixer = require('autoprefixer');
 const merge = require('lodash.merge');
 const transform = require('./lib/transform')
 
@@ -17,10 +14,14 @@ async function cssToTailwind(inputCss, _options) {
         _options,
     );
 
-    const { css: tailwindCss } = await postCss([
-        postCssTailwind(options.TAILWIND_CONFIG || undefined),
-        postCssAutoprefixer,
-    ]).process(options.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+    if (!options.COMPILE_TAILWIND_CSS) {
+        throw new Error('cssToTailwind\'s browser version needs the COMPILE_TAILWIND_CSS option to be set')
+    }
+
+    const tailwindCss = await options.COMPILE_TAILWIND_CSS({
+        input: options.PREPROCESSOR_INPUT,
+        tailwindConfig: options.TAILWIND_CONFIG,
+    })
 
     const QUX = await transform(inputCss, tailwindCss, options);
 
