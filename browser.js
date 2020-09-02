@@ -1,5 +1,5 @@
 const merge = require('lodash.merge');
-const transform = require('./lib/transform')
+const transform = require('./lib/transform');
 
 async function cssToTailwind(inputCss, _options) {
     const options = merge(
@@ -15,17 +15,17 @@ async function cssToTailwind(inputCss, _options) {
     );
 
     if (!options.COMPILE_TAILWIND_CSS) {
-        throw new Error('cssToTailwind\'s browser version needs the COMPILE_TAILWIND_CSS option to be set')
+        throw new Error("cssToTailwind's browser version needs the COMPILE_TAILWIND_CSS option to be set");
     }
 
     const tailwindCss = await options.COMPILE_TAILWIND_CSS({
         input: options.PREPROCESSOR_INPUT,
         tailwindConfig: options.TAILWIND_CONFIG,
-    })
+    });
 
     const QUX = await transform(inputCss, tailwindCss, options);
 
-    debugger;
+    // debugger;
 
     return QUX;
 }
