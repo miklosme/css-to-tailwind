@@ -27,6 +27,8 @@ async function cssToTailwind(inputCss, tailwindCss, _options) {
 
     // debugger;
 
+    console.log(QUX)
+
     return QUX;
 }
 
