@@ -4,7 +4,7 @@ const postCssAutoprefixer = require('autoprefixer');
 const merge = require('lodash.merge');
 const transform = require('./lib/transform')
 
-async function cssToTailwind(inputCss, _options) {
+async function cssToTailwind(inputCss, tailwindCss, _options) {
     const options = merge(
         {
             COLOR_DELTA: 2,
@@ -17,10 +17,14 @@ async function cssToTailwind(inputCss, _options) {
         _options,
     );
 
-    const { css: tailwindCss } = await postCss([
-        postCssTailwind(options.TAILWIND_CONFIG || undefined),
-        postCssAutoprefixer,
-    ]).process(options.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+    if (!tailwindCss) {
+        const { css } = await postCss([
+            postCssTailwind(options.TAILWIND_CONFIG || undefined),
+            postCssAutoprefixer,
+        ]).process(options.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+
+        tailwindCss = css;
+    }
 
     const QUX = await transform(inputCss, tailwindCss, options);
 

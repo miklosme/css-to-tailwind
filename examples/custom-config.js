@@ -44,7 +44,7 @@ const cssToTailwind = require('../css-to-tailwind');
       }
     `;
 
-    const results = await cssToTailwind(inputCss, {
+    const results = await cssToTailwind(inputCss, undefined, {
         TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'customs/tailwind.config.js')),
         COLOR_DELTA: 5,
     });

@@ -1,8 +1,9 @@
 const merge = require('lodash.merge');
 const transform = require('./lib/transform');
+const memoize = require('memoize-one/dist/memoize-one.cjs.js');
 
-async function cssToTailwind(inputCss, _options) {
-    const options = merge(
+const getOptions = memoize((_options) => {
+    return merge(
         {
             COLOR_DELTA: 2,
             FULL_ROUND: 9999,
@@ -13,15 +14,14 @@ async function cssToTailwind(inputCss, _options) {
         },
         _options,
     );
+});
 
-    if (!options.COMPILE_TAILWIND_CSS) {
-        throw new Error("cssToTailwind's browser version needs the COMPILE_TAILWIND_CSS option to be set");
+async function cssToTailwind(inputCss, tailwindCss, _options) {
+    const options = getOptions(_options);
+
+    if (typeof tailwindCss !== 'string') {
+        throw new Error('tailwindCss must be provided for the browser version');
     }
-
-    const tailwindCss = await options.COMPILE_TAILWIND_CSS({
-        input: options.PREPROCESSOR_INPUT,
-        tailwindConfig: options.TAILWIND_CONFIG,
-    });
 
     const QUX = await transform(inputCss, tailwindCss, options);
 
