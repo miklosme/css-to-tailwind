@@ -261,7 +261,7 @@ test('cssToTailwind', async () => {
 });
 
 test('cssToTailwind with custom tailwind config', async () => {
-    const results = await cssToTailwind(inputCss, undefined, {
+    const results = await cssToTailwind(inputCss, {
         TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'fixtures/tailwind.config.js')),
         COLOR_DELTA: 5,
     });

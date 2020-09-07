@@ -9,7 +9,7 @@ const getOptions = memoize((_options) => {
             FULL_ROUND: 9999,
             REM: 16,
             EM: 16,
-            PREPROCESSOR_INPUT: '@tailwind base; @tailwind components; @tailwind utilities;',
+            PREPROCESSOR_INPUT: '@tailwind base;\n\n@tailwind components;\n\n@tailwind utilities;',
             TAILWIND_CONFIG: null,
         },
         _options,
@@ -23,13 +23,7 @@ async function cssToTailwind(inputCss, tailwindCss, _options) {
         throw new Error('tailwindCss must be provided for the browser version');
     }
 
-    const QUX = await transform(inputCss, tailwindCss, options);
-
-    // debugger;
-
-    console.log(QUX)
-
-    return QUX;
+    return transform(inputCss, tailwindCss, options);
 }
 
 module.exports = cssToTailwind;
