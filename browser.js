@@ -1,11 +1,9 @@
-const postCss = require('postCss');
-const postCssTailwind = require('tailwindcss');
-const postCssAutoprefixer = require('autoprefixer');
 const merge = require('lodash.merge');
 const transform = require('./lib/transform');
+const memoize = require('memoize-one/dist/memoize-one.cjs.js');
 
-async function cssToTailwind(inputCss, _options) {
-    const options = merge(
+const getOptions = memoize((_options) => {
+    return merge(
         {
             COLOR_DELTA: 2,
             FULL_ROUND: 9999,
@@ -16,11 +14,14 @@ async function cssToTailwind(inputCss, _options) {
         },
         _options,
     );
+});
 
-    const { css: tailwindCss } = await postCss([
-        postCssTailwind(options.TAILWIND_CONFIG || undefined),
-        postCssAutoprefixer,
-    ]).process(options.PREPROCESSOR_INPUT, { from: 'tailwind.css' });
+async function cssToTailwind(inputCss, tailwindCss, _options) {
+    const options = getOptions(_options);
+
+    if (typeof tailwindCss !== 'string') {
+        throw new Error('tailwindCss must be provided for the browser version');
+    }
 
     return transform(inputCss, tailwindCss, options);
 }

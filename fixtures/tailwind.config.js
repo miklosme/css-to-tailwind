@@ -1,7 +1,3 @@
-// After adding new theme properties, please update the types that are used by the `classnames` module, otherwise
-// Typescript type-checking will fail
-// To update the types, run `yarn tw:generate-types`
-
 module.exports = {
     purge: false,
     theme: {
