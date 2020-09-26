@@ -126,6 +126,14 @@ test('result does not contain redundant classes', async () => {
     expect(results[0].tailwind).toBe('p-6');
 });
 
+test('selector should correctly handle comma operator', async () => {
+  const results = await cssToTailwind(`a, b {
+    padding: 1.6rem;
+  }`);
+
+  expect(results[0].selector).toBe('a, b');
+});
+
 test('result does not contain unsupported classes', async () => {
     const results = await cssToTailwind(`.foo {
       width: 50%;
