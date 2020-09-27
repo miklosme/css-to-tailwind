@@ -127,11 +127,11 @@ test('result does not contain redundant classes', async () => {
 });
 
 test('selector should correctly handle comma operator', async () => {
-  const results = await cssToTailwind(`a, b {
+    const results = await cssToTailwind(`a, b {
     padding: 1.6rem;
   }`);
 
-  expect(results[0].selector).toBe('a, b');
+    expect(results[0].selector).toBe('a, b');
 });
 
 test('result does not contain unsupported classes', async () => {
@@ -192,6 +192,36 @@ test('result have missing variants values', async () => {
             },
             "selector": ".foo",
             "tailwind": "",
+          },
+        ]
+    `);
+});
+
+test('custom spacing should be correctly represented in results', async () => {
+    const input = `
+      .foo {
+          padding: 4rem;
+      }`;
+
+    const results = await cssToTailwind(input, {
+        TAILWIND_CONFIG: {
+            theme: {
+                spacing: {
+                    '36': '36px',
+                    '72': '72px',
+                    '144': '144px',
+                },
+            },
+        },
+    });
+
+    expect(results[0].tailwind).toBe('p-72');
+    expect(results).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "missing": Object {},
+            "selector": ".foo",
+            "tailwind": "p-72",
           },
         ]
     `);
