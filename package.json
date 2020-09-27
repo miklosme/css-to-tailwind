@@ -45,5 +45,13 @@
     "patch-package": "^6.2.2",
     "prettier": "^2.0.5",
     "rollup": "^2.23.1"
-  }
+  },
+  "jest": {
+    "setupFilesAfterEnv": ["<rootDir>/jest-config.js"]
+  },
+  "files": [
+    "*.js",
+    "lib/*",
+    "patched-lib/*"
+  ]
 }

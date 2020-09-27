@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`normalizer should handle variants 2`] = `
+Object {
+  "base": Object {
+    ".bar": Object {
+      "padding-bottom": "24px",
+      "padding-left": "80px",
+      "padding-right": "80px",
+      "padding-top": "24px",
+      "position": "relative",
+    },
+    ".baz": Object {
+      "background-image": "url(logo.svg)",
+      "background-repeat": "no-repeat",
+      "padding-bottom": "24px",
+      "padding-left": "80px",
+      "padding-right": "80px",
+      "padding-top": "24px",
+    },
+    ".foo": Object {
+      "border-bottom-width": "1px",
+      "border-color": "rgba(250, 208, 208, 1)",
+      "border-left-width": "1px",
+      "border-radius": "4px",
+      "border-right-width": "1px",
+      "border-style": "solid",
+      "border-top-width": "1px",
+      "border-width": "1px",
+      "color": "rgba(255, 255, 255, 1)",
+      "margin-bottom": "24px",
+      "padding-bottom": "24px",
+      "padding-left": "80px",
+      "padding-right": "80px",
+      "padding-top": "24px",
+      "position": "relative",
+      "width": "100%",
+    },
+  },
+  "focus": Object {
+    ".foo": Object {
+      "border-color": "rgba(226, 242, 240, 1)",
+    },
+  },
+  "hover": Object {
+    ".foo": Object {
+      "background-color": "rgba(204, 204, 204, 1)",
+    },
+  },
+  "placeholder": Object {
+    ".bar": Object {
+      "color": "rgba(230, 230, 230, 1)",
+    },
+  },
+  "xl": Object {
+    ".bar": Object {
+      "margin-bottom": "40px",
+      "padding-bottom": "48px",
+      "padding-left": "96px",
+      "padding-right": "96px",
+      "padding-top": "48px",
+    },
+  },
+}
+`;
