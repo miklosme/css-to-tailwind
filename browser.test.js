@@ -33,6 +33,6 @@ test('browser version works', async () => {
 
 test('browser version throws when tailwind.css is not provided', async () => {
     await expect(cssToTailwind('')).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"tailwindCss must be provided for the browser version"`,
+        `"You are using the browser package, but did not provide the \`tailwind.css\` content. Browser use-cases are reponsible to build \`tailwind.css\` themselves."`,
     );
 });

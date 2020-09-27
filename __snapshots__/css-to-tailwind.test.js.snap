@@ -4,7 +4,7 @@ exports[`cssToTailwind 1`] = `
 Array [
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "border-color",
           "rgba(250, 208, 208, 1)",
@@ -16,7 +16,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "min-height",
           "4rem",
@@ -28,7 +28,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "border-color",
           "rgba(229, 229, 229, 1)",
@@ -40,7 +40,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "max-width",
           "fit-content",
@@ -52,7 +52,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "line-height",
           "48px",
@@ -68,7 +68,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "border-color",
           "rgba(229, 229, 229, 1)",
@@ -85,7 +85,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "width",
           "608px",
@@ -97,7 +97,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "width",
           "1216px",
@@ -114,7 +114,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "border-color",
           "rgba(229, 229, 229, 1)",
@@ -136,7 +136,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "background-color",
           "rgba(227, 230, 230, 1)",
@@ -163,7 +163,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "min-height",
           "4rem",
@@ -180,7 +180,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "max-width",
           "fit-content",
@@ -192,7 +192,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "line-height",
           "48px",
@@ -214,7 +214,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "width",
           "608px",
@@ -226,7 +226,7 @@ Array [
   },
   Object {
     "missing": Object {
-      "default": Array [
+      "base": Array [
         Array [
           "width",
           "1216px",
