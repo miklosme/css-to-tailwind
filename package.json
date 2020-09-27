@@ -48,5 +48,10 @@
   },
   "jest": {
     "setupFilesAfterEnv": ["<rootDir>/jest-config.js"]
-  }
+  },
+  "files": [
+    "*.js",
+    "lib/*",
+    "patched-lib/*"
+  ]
 }

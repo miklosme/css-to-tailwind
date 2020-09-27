@@ -1,9 +1,0 @@
-examples/
-fixtures/
-__snapshots__
-*.test.js
-.vscode/
-yarn-error.log
-patches/
-.eslintrc.js
-rollup.config.js
