@@ -11,14 +11,21 @@ test('cssToTailwind', async () => {
 });
 
 test('cssToTailwind with custom tailwind config', async () => {
-    const results = await cssToTailwind(testData.plainCss, {
+    const results = await cssToTailwind(`div { background: #4D4D4D }`, {
         TAILWIND_CONFIG: require(path.resolve(process.cwd(), 'fixtures/tailwind.config.js')),
         COLOR_DELTA: 5,
     });
 
-    expect(results).toHaveLength(15);
-    expect(results.filter((res) => Object.keys(res.missing).length)).toHaveLength(5);
-    expect(results).toMatchSnapshot();
+    expect(results[0].tailwind).toBe('bg-neutral-700');
+    expect(results).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "missing": Object {},
+            "selector": "div",
+            "tailwind": "bg-neutral-700",
+          },
+        ]
+    `);
 });
 
 test('cssToTailwind supports variants', async () => {
