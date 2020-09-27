@@ -21,6 +21,26 @@ test('cssToTailwind with custom tailwind config', async () => {
     expect(results).toMatchSnapshot();
 });
 
+test('cssToTailwind supports variants', async () => {
+    const results = await cssToTailwind(testData.cssWithVariants);
+    expect(results.map((r) => ({ selector: r.selector, tailwind: r.tailwind }))).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "selector": ".baz",
+            "tailwind": "bg-no-repeat py-6 px-20",
+          },
+          Object {
+            "selector": ".foo",
+            "tailwind": "rounded border-solid border mb-6 py-6 px-20 relative text-white w-full",
+          },
+          Object {
+            "selector": ".bar",
+            "tailwind": "py-6 px-20 relative xl:mb-10 xl:py-12 xl:px-24",
+          },
+        ]
+    `);
+});
+
 test('result does not contain redundant classes', async () => {
     const results = await cssToTailwind(`.foo {
       padding: 1.6rem;
