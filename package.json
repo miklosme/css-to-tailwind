@@ -1,6 +1,6 @@
 {
   "name": "css-to-tailwind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "css-to-tailwind.js",
   "author": "Miklos Megyes <m.miklos05+npm@gmail.com>",
   "license": "MIT",

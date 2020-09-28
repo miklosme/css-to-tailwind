@@ -156,3 +156,30 @@ test('custom spacing should be correctly represented in results', async () => {
         ]
     `);
 });
+
+test('custom utility classes defined in preprocessor input should be used', async () => {
+    const inputCss = `div {
+      background: #81e6d9;
+      padding: 1.6rem 4.6rem;
+      letter-spacing: 0.03rem;
+      border-radius: 0.2rem;
+    }`;
+
+    const preprocessInput = `
+      @tailwind base;
+      
+      @tailwind components;
+      
+      @tailwind utilities;
+
+      .button {
+        @apply bg-teal-300 rounded py-6 px-20 tracking-wide
+      }
+    `;
+
+    const results = await cssToTailwind(inputCss, {
+        PREPROCESSOR_INPUT: preprocessInput,
+    });
+    
+    expect(results[0].tailwind).toBe('button');
+});
