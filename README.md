@@ -2,6 +2,8 @@
 
 Convert CSS to [TailwindCSS](https://github.com/tailwindlabs/tailwindcss) classes.
 
+# Demo: [transform.tools/css-to-tailwind](https://transform.tools/css-to-tailwind)
+
 ## Usage
 
 `npx css-to-tailwind ".logo { margin-bottom: 1.6rem; min-height: 4rem; display: flex; justify-content: center; }"`
